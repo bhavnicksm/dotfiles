@@ -2,7 +2,7 @@
 
 # Path to your dotfiles and target config directory
 DOTFILES_DIR="$(pwd)/neovim/.config/nvim"
-TARGET_DIR=~/.config/nvim
+TARGET_DIR="$HOME/.config/nvim"
 
 # Create symlink if not exists
 if [ ! -L "$TARGET_DIR" ]; then
