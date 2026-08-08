@@ -1,38 +1,26 @@
-# Bhavnick's Dotfiles
+# dotfiles
 
-Yes, I have my own dotfiles :) 
-And, I think they are pretty cool too. 
+Personal NixOS config. Consumes [`bnixos`](https://github.com/bhavnicksm/bnixos) as a product flake input — this repo is the dogfood machine, not the product.
 
+## Layout
 
-## Stow set-up
+```
+flake.nix                 # wires bnixos + hardware + personal
+hardware-configuration.nix
+personal.nix              # hostname, secrets, home-manager, extras
+```
 
-If you have `GNU stow` on your system, you can run `stow` to symlink the files here, like below:
+## Branch
+
+`nixos` — rework away from the old Stow/neovim/zsh layout toward the bnixos consumer model.
+
+## Rebuild (on the laptop)
 
 ```bash
-stow -v ./neovim 
+sudo nixos-rebuild switch --flake ~/Personal/dotfiles#dotfiles
 ```
 
-## Manual set-up
+## Notes
 
-Sometimes, `stow` doesn't work properly, in which case, I use the `link_*.sh` files, for example: 
-
-```bash 
-bash link_nvim.sh
-```
-
-These files do a manual link from the current file to the required file, without any dependencies to `stow`, which is awesome. 
-
-
-## Neovim
-
-I <3 Neovim.
-
-I use it with a bunch of tools like treesitter, lsp, telescope etc along with a cool them from catppuccine.
-
-
-## License
-
-These dotfiles are MIT licensed, so feel free to use them however you like. Though some acknowledgement would be nice :)
-
-
-
+- `bnixos` still currently ships a monolithic personal config; once it exports a clean `nixosModules.system`, this flake stays the same shape and just gets thinner `personal.nix`.
+- Keep secrets here (sops/agenix), never in public `bnixos`.
