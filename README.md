@@ -17,10 +17,10 @@ personal.nix              # hostname, secrets, home-manager, extras
 ## Rebuild (on the laptop)
 
 ```bash
-sudo nixos-rebuild switch --flake ~/Personal/dotfiles#dotfiles
+sudo nixos-rebuild switch --flake ~/Projects/dotfiles#dotfiles
 ```
 
 ## Notes
 
-- `bnixos` still currently ships a monolithic personal config; once it exports a clean `nixosModules.system`, this flake stays the same shape and just gets thinner `personal.nix`.
+- `bnixos` is the product (system config, no personal bits). This repo holds the personal layer: hostname, user, home-manager.
 - Keep secrets here (sops/agenix), never in public `bnixos`.
