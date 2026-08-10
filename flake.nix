@@ -2,17 +2,20 @@
   description = "Personal NixOS consumer of bnixos";
 
   inputs = {
-    bnixos.url = "github:bhavnicksm/bnixos";
+    # Private repo: fetch over SSH so flakes can authenticate
+    bnixos.url = "git+ssh://git@github.com/bhavnicksm/bnixos.git";
     nixpkgs.follows = "bnixos/nixpkgs";
     nixos-hardware.follows = "bnixos/nixos-hardware";
     home-manager.follows = "bnixos/home-manager";
+    nixpkgs-unstable.follows = "bnixos/nixpkgs-unstable";
   };
 
-  outputs = { bnixos, nixpkgs, nixos-hardware, home-manager, ... }: {
+  outputs = { self, bnixos, nixpkgs, nixos-hardware, home-manager, ... }@inputs: {
     nixosConfigurations.dotfiles = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
+      specialArgs = { inherit inputs; };
       modules = [
-        # Product (once bnixos exposes nixosModules.system cleanly)
+        # Product: the bnixos system configuration
         bnixos.nixosModules.default
 
         # Device layer
