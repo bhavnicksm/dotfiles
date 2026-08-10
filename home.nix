@@ -144,6 +144,14 @@
   # Setting the font
   fonts.fontconfig.enable = true;
 
+  # Terminal emulator: Ghostty with the Flexoki light theme
+  programs.ghostty = {
+    enable = true;
+    settings = {
+      theme = "flexoki-light";
+    };
+  };
+
   # Adding the neovim options here
   programs.neovim = {
     enable = true;
