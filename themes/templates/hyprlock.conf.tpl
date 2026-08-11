@@ -14,15 +14,15 @@ animations {
     animation = inputFieldDots, 1, 2, linear
 }
 
+# Mirrors the SDDM greeter (themes/sddm/main.qml.tpl): same wallpaper, same
+# 30% dim (brightness 0.7), no blur, same frosted card.
 background {
     monitor =
     path = {{ lockBg }}
-    blur_passes = 4
-    blur_size = 8
-    noise = 0.03
-    contrast = 0.92
-    brightness = 1.0
-    vibrancy = 0.2
+    noise = 0.02
+    contrast = 1.0
+    brightness = 0.7
+    vibrancy = 0.1
 }
 
 # Mirrors Omarchy's lock: 381x67 field, 3px outline, rounded to Hyprland's

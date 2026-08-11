@@ -69,7 +69,7 @@ let
   hyprlockConf = renderTemplate (render ./templates/hyprlock.conf.tpl) ({
     # Omarchy lock surface: theme background at 80% alpha, accent border,
     # palette foreground text, palette red on failure.
-    lockInner = hexToRgba palette.background 0.8;
+    lockInner = hexToRgba palette.background 0.85;
     lockOuter = hexToRgba palette.accent 1.0;
     lockCheck = hexToRgba palette.green 1.0;
     lockFail = hexToRgba palette.red 1.0;
