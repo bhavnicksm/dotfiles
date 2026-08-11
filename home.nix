@@ -147,6 +147,12 @@
 	"$mod, up, movefocus, u"
 	"$mod, down, movefocus, d"
 
+	# Swap the focused window with its neighbor within the workspace
+	"$mod SHIFT, left, swapwindow, l"
+	"$mod SHIFT, right, swapwindow, r"
+	"$mod SHIFT, up, swapwindow, u"
+	"$mod SHIFT, down, swapwindow, d"
+
 	# Switch Workspaces
 	"$mod, 1, workspace, 1"
 	"$mod, 2, workspace, 2"
