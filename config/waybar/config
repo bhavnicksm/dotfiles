@@ -2,25 +2,19 @@
     "layer": "top",
     "position": "top",
     "reload_style_on_change": true,
-    "modules-left": ["clock","tray"],
+    "modules-left": ["clock", "custom/sep", "tray"],
     "modules-center": ["hyprland/workspaces"],
-    "modules-right": ["group/expand", "pulseaudio", "bluetooth","network","battery"],
+    "modules-right": ["group/expand", "custom/sep", "pulseaudio", "custom/sep", "bluetooth", "custom/sep", "network", "custom/sep", "battery"],
 
 
     "hyprland/workspaces": {
-        "format": "{icon}",
-	"format-icons": {
-            "active": "󰝥",
-            "default": "󰝦",
-            "empty": "󰝦"
-        },
+        "format": "{id}",
         "persistent-workspaces": {
             "*": [ 1,2,3,4,5 ]
         }
     },
     "clock": {
-        "format": "{:%I:%M:%S %p} ",
-        "interval": 1,   
+        "format": "{:%a, %b %d · %I:%M %p}",
         "tooltip-format": "<tt>{calendar}</tt>",
         "calendar": {
             "format": {
@@ -75,6 +69,10 @@
     },
     "custom/expand": {
       "format": "󰍜",
+      "tooltip": false
+    },
+    "custom/sep": {
+      "format": "|",
       "tooltip": false
     },
     "custom/endpoint":{

@@ -1,138 +1,102 @@
-/* Define colors - Gruvbox Light Hard theme */
-@define-color background #f9f5d7;
+/* Gruvbox Light Hard palette - thin full-width bar */
+@define-color background #ffffff;
 @define-color foreground #3c3836;
 @define-color color7 #3c3836;
 @define-color color9 #076678;
+@define-color subtle #928374;
 
 * {
-    font-size: 13px;  /* Reduce from 15px */
+    font-size: 12px;
     font-family: "JetBrainsMono Nerd Font";
-}
-
-.modules-left {
-    padding: 3px;  
-    margin: 5px 0px 3px 5px;  
-    border-radius: 8px;  
-    background: alpha(@background, .9);
-    box-shadow: 0px 0px 2px rgba(0, 0, 0, .3);
-}
-
-.modules-center {
-    padding: 3px;
-    margin: 5px 0px 3px 0px;
-    border-radius: 8px;
-    background: alpha(@background, .9);
-    box-shadow: 0px 0px 2px rgba(0, 0, 0, .3);
-}
-
-.modules-right {
-    padding: 3px;
-    margin: 5px 5px 3px 0px;
-    border-radius: 8px;
-    background: alpha(@background, .9);
-    box-shadow: 0px 0px 2px rgba(0, 0, 0, .3);
+    min-height: 0;
 }
 
 window#waybar {
-    all: unset;
+    background: @background;
+    color: @foreground;
+    border: none;
+    border-bottom: 2px solid #000000;
+    border-radius: 0;
+    padding: 0;
+    min-height: 24px;
 }
 
-tooltip {
-    background: #fbf1c7;
-    color: #282828;
-    border: 2px solid #7c6f64;
-    border-radius: 5px;
-    padding: 8px;
-    font-weight: bold;
+/* Modules */
+#clock,
+#bluetooth,
+#network,
+#battery,
+#pulseaudio,
+#cpu,
+#memory,
+#temperature,
+#tray,
+#custom-colorpicker,
+#custom-expand,
+#workspaces {
+    padding: 4px 6px;
 }
 
-tooltip * {
-    color: #282828;
-}
-
-#clock:hover, #bluetooth:hover, #network:hover, #battery:hover, #cpu:hover, #memory:hover, #temperature:hover {
-    transition: all .3s ease;
-    color: @color9;
+#custom-sep {
+    color: #d5c4a1;
+    padding: 0px 2px;
 }
 
 #clock {
-    padding: 0px 0px;
     color: @color7;
-    transition: all .3s ease;
+    font-weight: normal;
+    padding-left: 10px;
+    padding-right: 10px;
 }
 
+/* Workspaces */
 #workspaces {
-    padding: 0px 1px;
+    padding: 1px 2px;
 }
 
 #workspaces button {
     all: unset;
-    padding: 0px 5px;
-    color: #7c6f64;
-    transition: all .2s ease;
+    padding: 2px 6px;
+    border-radius: 3px;
+    color: @subtle;   
 }
 
 #workspaces button:hover {
-    color: rgba(0, 0, 0, 0);
-    border: none;
-    text-shadow: 0px 0px 1.5px rgba(0, 0, 0, .5);
-    transition: all 1s ease;
+    background: #000000;
+    color: #ffffff;
 }
 
 #workspaces button.active {
-    color: @color9;
-    border: none;
-    text-shadow: 0px 0px 2px rgba(0, 0, 0, .5);
+    background: #000000;
+    color: #ffffff;
 }
 
 #workspaces button.empty {
     color: #d5c4a1;
-    border: none;
-    text-shadow: 0px 0px 1.5px rgba(0, 0, 0, .2);
-}
-
-#workspaces button.empty:hover {
-    color: rgba(0, 0, 0, 0);
-    border: none;
-    text-shadow: 0px 0px 1.5px rgba(0, 0, 0, .5);
-    transition: all 1s ease;
 }
 
 #workspaces button.empty.active {
-    color: @color9;
-    border: none;
-    text-shadow: 0px 0px 2px rgba(0, 0, 0, .5);
+    background: #000000;
+    color: #ffffff;
 }
 
-#bluetooth {
-    padding: 0px 5px;
+/* Hover accent */
+#clock:hover,
+#bluetooth:hover,
+#network:hover,
+#battery:hover,
+#cpu:hover,
+#memory:hover,
+#temperature:hover,
+#pulseaudio:hover,
+#tray:hover,
+#custom-colorpicker:hover {
     transition: all .3s ease;
-    color: @color7;
+    background: #000000;
+    color: #ffffff;
 }
 
-#network {
-    padding: 0px 3px;
-    transition: all .3s ease;
-    color: @color7;
-}
-
-#battery {
-    padding: 0px 3px;
-    transition: all .3s ease;
-    color: @color7;
-}
-
-#clock:hover, #bluetooth:hover, #network:hover, #battery:hover, #cpu:hover, #memory:hover, #temperature:hover, #pulseaudio:hover {
-    transition: all .3s ease;
-    color: @color9;
-}
-
-#pulseaudio {
-    padding: 0px 3px;
-    transition: all .3s ease;
-    color: @color7;
-}
-
+/* Battery states */
 #battery.charging {
     color: #79740e;
 }
@@ -156,30 +120,32 @@ tooltip * {
     }
 }
 
+/* Expand drawer */
 #group-expand {
-    padding: 0px 5px;
-    transition: all .3s ease; 
+    padding: 0px;
+    transition: all .3s ease;
 }
 
 #custom-expand {
-    padding: 0px 5px;
-    color: alpha(@foreground, .3);
-    text-shadow: 0px 0px 2px rgba(0, 0, 0, .3);
-    transition: all .3s ease; 
+    padding: 4px 6px;
+    color: @foreground;
+    transition: all .3s ease;
 }
 
 #custom-expand:hover {
-    color: rgba(60, 56, 54, .5);
-    text-shadow: 0px 0px 2px rgba(60, 56, 54, .5);
+    background: #000000;
+    color: #ffffff;
 }
 
 #custom-colorpicker {
-    padding: 0px 5px;
+    padding: 4px 6px;
 }
 
-#cpu, #memory, #temperature {
-    padding: 0px 3px;
-    transition: all .3s ease; 
+#cpu,
+#memory,
+#temperature {
+    padding: 4px 6px;
+    transition: all .3s ease;
     color: @color7;
 }
 
@@ -188,17 +154,33 @@ tooltip * {
     text-shadow: 0px 0px 1.5px rgba(0, 0, 0, .5);
 }
 
+/* Tray */
 #tray {
-    padding: 0px 5px;
-    transition: all .3s ease; 
+    padding: 4px 8px;
+    padding-left: 4px;
+    transition: all .3s ease;
 }
 
 #tray menu * {
-    padding: 0px 5px;
-    transition: all .3s ease; 
+    padding: 4px 6px;
+    transition: all .3s ease;
 }
 
 #tray menu separator {
-    padding: 0px 5px;
-    transition: all .3s ease; 
+    padding: 4px 6px;
+    transition: all .3s ease;
+}
+
+/* Tooltip */
+tooltip {
+    background: #fbf1c7;
+    color: #282828;
+    border: 2px solid #7c6f64;
+    border-radius: 5px;
+    padding: 8px;
+    font-weight: bold;
+}
+
+tooltip * {
+    color: #282828;
 }

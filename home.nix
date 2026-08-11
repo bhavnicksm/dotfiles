@@ -59,8 +59,13 @@
         gaps_in = 3;      # Gap between windows (default is 5)
         gaps_out = 6;     # Gap between windows and screen edge (default is 20)
         border_size = 2;  # Window border thickness (default is 1)
-        "col.active_border" = "rgb(076678)";    # Gruvbox blue for active window
+        "col.active_border" = "rgb(000000)";    # Black active border
         "col.inactive_border" = "rgb(928374)";  # Gruvbox gray for inactive
+      };
+
+      # Subtle rounded window corners
+      decoration = {
+        rounding = 6;
       };
 
       # Setting the animations to false for now
