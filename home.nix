@@ -228,7 +228,6 @@
     firefox
     spotify
     code-cursor-fhs
-    zed-editor-fhs
 
     # Miscellaneous pkgs (fonts etc.)
     nerd-fonts.jetbrains-mono
