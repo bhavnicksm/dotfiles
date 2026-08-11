@@ -10,6 +10,6 @@ case "$choice" in
         ;;
     "🎨 Themes")
         # Launch theme selector
-        ~/.bnixos/bin/theme-selector.sh
+        ~/.local/bin/theme-selector.sh
         ;;
 esac

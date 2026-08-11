@@ -3,6 +3,7 @@
 {
   # Machine identity + anything that is *you*, not the product.
   networking.hostName = "bnixos";
+  time.timeZone = "America/Los_Angeles";
 
   # NixOS-level zsh support (PATH for the login shell)
   programs.zsh.enable = true;
