@@ -8,10 +8,10 @@ Current setup + what to do when a lock experiment goes wrong.
   at `home.nix:143`).
 - Auth is PAM-backed (`hyprlock` ships `home-path/etc/pam.d/hyprlock`).
 - Idle/sleep handling is `hypridle` (also in `home.packages`).
-- **Login screen:** SDDM with the custom `omarchy-white` theme (built from
-  `themes/sddm/main.qml.tpl` into `share/sddm/themes/omarchy-white`, wired in
+- **Login screen:** SDDM with the custom `white` theme (built from
+  `themes/sddm/main.qml.tpl` into `share/sddm/themes/white`, wired in
   `personal.nix` via `services.displayManager.sddm.theme = lib.mkForce
-  "omarchy-white"`). Overrides bnixos's `catppuccin-mocha`.
+  "white"`). Overrides bnixos's `catppuccin-mocha`.
 - **Login keyring unlock:** `security.pam.services.sddm.enableGnomeKeyring`
   (bnixos) + `gnome-keyring-daemon --components=secrets` in the Hyprland
   `exec-once`.
@@ -21,7 +21,7 @@ Current setup + what to do when a lock experiment goes wrong.
 Status: **installed and built, NOT yet eyeballed** (requires logout to see).
 
 What changed:
-- `personal.nix`: builds `sddmTheme` + forces `sddm.theme` to `omarchy-white`.
+- `personal.nix`: builds `sddmTheme` + forces `sddm.theme` to `white`.
 - Theme generator: `themes/sddm/main.qml.tpl` (mirrors the hyprlock look:
   golden-gate wallpaper, dim overlay, rounded frosted card). Rendered from the
   active palette at build time.
@@ -31,7 +31,7 @@ What changed:
 To revert this experiment specifically (back to catppuccin-mocha without a
 full rollback):
 1. Remove the two lines in `personal.nix`:
-   - `services.displayManager.sddm.theme = lib.mkForce "omarchy-white";`
+   - `services.displayManager.sddm.theme = lib.mkForce "white";`
    - `environment.systemPackages = [ sddmTheme ];`
 2. `sudo nixos-rebuild switch --flake ~/Projects/dotfiles#dotfiles`
 

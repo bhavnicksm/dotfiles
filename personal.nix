@@ -20,9 +20,9 @@ let
 
   # Omarchy-style SDDM theme, generated from the active palette so the login
   # screen matches hyprlock (see themes/sddm/main.qml.tpl).
-  sddmTheme = pkgs.runCommandLocal "sddm-theme-omarchy-white" { } ''
-    mkdir -p $out/share/sddm/themes/omarchy-white
-    cat > $out/share/sddm/themes/omarchy-white/Main.qml <<'QML'
+  sddmTheme = pkgs.runCommandLocal "sddm-theme-white" { } ''
+    mkdir -p $out/share/sddm/themes/white
+    cat > $out/share/sddm/themes/white/Main.qml <<'QML'
       ${renderTemplate (builtins.readFile ./themes/sddm/main.qml.tpl) {
         wallpaper = wallpaperPath;
         dimOverlay = qColor "#000000" 0.3;
@@ -34,8 +34,8 @@ let
         errorColor = palette.red;
       }}
     QML
-    cp ${./themes/sddm/theme.conf} $out/share/sddm/themes/omarchy-white/theme.conf
-    cp ${./themes/sddm/metadata.desktop} $out/share/sddm/themes/omarchy-white/metadata.desktop
+    cp ${./themes/sddm/theme.conf} $out/share/sddm/themes/white/theme.conf
+    cp ${./themes/sddm/metadata.desktop} $out/share/sddm/themes/white/metadata.desktop
   '';
 in
 {
@@ -54,7 +54,7 @@ in
   };
 
   # Themed, Omarchy-style login screen (overrides bnixos's catppuccin theme)
-  services.displayManager.sddm.theme = lib.mkForce "omarchy-white";
+  services.displayManager.sddm.theme = lib.mkForce "white";
   environment.systemPackages = [ sddmTheme ];
 
   # Greeter + plymouth render JetBrains Mono (user-level HM fonts are not

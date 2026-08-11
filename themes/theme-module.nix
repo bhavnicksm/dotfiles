@@ -105,6 +105,109 @@ let
     selection-foreground = bareHex palette.foreground;
     palette = ghosttyPalette;
   };
+
+  # ---- opencode TUI theme (see https://opencode.ai/docs/themes) ----
+  clampByte = n: if n < 0 then 0 else if n > 255 then 255 else n;
+  hexByte = n: let s = lib.toHexString (builtins.floor (clampByte n)); in if lib.stringLength s == 1 then "0${s}" else s;
+  rgbHex = r: g: b: "#${hexByte r}${hexByte g}${hexByte b}";
+  channels = hex:
+    let d = lib.removePrefix "#" hex;
+        dec = s: builtins.foldl'
+          (acc: c: acc * 16 + (builtins.listToAttrs (builtins.genList (i: {
+            name = builtins.toString i;
+            value = i;
+          }) 10) // { a = 10; b = 11; c = 12; d = 13; e = 14; f = 15; }).${lib.toLower c})
+          0 (lib.stringToCharacters s);
+    in {
+      r = dec (lib.substring 0 2 d);
+      g = dec (lib.substring 2 2 d);
+      b = dec (lib.substring 4 2 d);
+    };
+  # Mix a hex toward white by `amt` (0-1); for dark-mode variants.
+  mixWhite = hex: amt:
+    let c = channels hex;
+        m = n: n * (1.0 - amt) + 255.0 * amt;
+    in rgbHex (m c.r) (m c.g) (m c.b);
+  # Scale the palette background down toward black by `f`; dark-mode panels.
+  darkBg = f:
+    let c = channels palette.background;
+    in rgbHex (c.r * f) (c.g * f) (c.b * f);
+  # Dark and light variants for every theme role.
+  d = dark: light: { inherit dark light; };
+  # Dark-mode surface derived from the (light) palette background.
+  darkSurface = darkBg 0.11;
+  darkOnDark = amt: mixWhite darkSurface amt;
+  oc = {
+    "$schema" = "https://opencode.ai/theme.json";
+    defs = {
+      bg = palette.background;
+      bgPanel = palette.dark_background;
+      bgElement = palette.darker_background;
+      fg = palette.foreground;
+      muted = palette.muted;
+      accent = palette.accent;
+      selection = palette.selection;
+      red = palette.red;
+      yellow = palette.yellow;
+      green = palette.green;
+      cyan = palette.cyan;
+      blue = palette.blue;
+      magenta = palette.magenta;
+    };
+    theme = {
+      primary = d "accent" "accent";
+      secondary = d "selection" "selection";
+      accent = d "accent" "accent";
+      error = d (mixWhite palette.red 0.45) "red";
+      warning = d (mixWhite palette.yellow 0.45) "yellow";
+      success = d (mixWhite palette.green 0.45) "green";
+      info = d (mixWhite palette.cyan 0.45) "cyan";
+      text = d (darkOnDark 0.9) "fg";
+      textMuted = d (darkOnDark 0.6) "muted";
+      background = d (darkBg 0.11) "bg";
+      backgroundPanel = d (darkBg 0.15) "bgPanel";
+      backgroundElement = d (darkBg 0.19) "bgElement";
+      border = d (darkBg 0.22) "bgElement";
+      borderActive = d (darkOnDark 0.55) "accent";
+      borderSubtle = d (darkBg 0.11) "bgElement";
+      diffAdded = d "#3fb950" "#1a7f37";
+      diffRemoved = d "#f85149" "#cf222e";
+      diffContext = d (darkOnDark 0.6) "muted";
+      diffHunkHeader = d (darkOnDark 0.7) "accent";
+      diffHighlightAdded = d "#3fb950" "#1a7f37";
+      diffHighlightRemoved = d "#f85149" "#cf222e";
+      diffAddedBg = d "#12251c" "#dafbe1";
+      diffRemovedBg = d "#2d1b1b" "#ffebe9";
+      diffContextBg = d (darkBg 0.15) "bgPanel";
+      diffLineNumber = d (darkOnDark 0.5) "muted";
+      diffAddedLineNumberBg = d "#12251c" "#dafbe1";
+      diffRemovedLineNumberBg = d "#2d1b1b" "#ffebe9";
+      markdownText = d (darkOnDark 0.9) "fg";
+      markdownHeading = d (darkOnDark 0.75) "accent";
+      markdownLink = d (darkOnDark 0.7) "accent";
+      markdownLinkText = d (darkOnDark 0.7) "accent";
+      markdownCode = d (mixWhite palette.cyan 0.45) "cyan";
+      markdownBlockQuote = d (darkOnDark 0.6) "muted";
+      markdownEmph = d (mixWhite palette.yellow 0.45) "yellow";
+      markdownStrong = d (darkOnDark 0.9) "fg";
+      markdownHorizontalRule = d (darkBg 0.3) "bgElement";
+      markdownListItem = d (darkOnDark 0.75) "accent";
+      markdownListEnumeration = d (darkOnDark 0.75) "accent";
+      markdownImage = d (darkOnDark 0.7) "accent";
+      markdownImageText = d (darkOnDark 0.6) "muted";
+      markdownCodeBlock = d (darkOnDark 0.85) "fg";
+      syntaxComment = d (darkOnDark 0.55) "muted";
+      syntaxKeyword = d (darkOnDark 0.7) "accent";
+      syntaxFunction = d (mixWhite palette.blue 0.5) "blue";
+      syntaxVariable = d (darkOnDark 0.9) "fg";
+      syntaxString = d (mixWhite palette.green 0.5) "green";
+      syntaxNumber = d (mixWhite palette.magenta 0.5) "magenta";
+      syntaxType = d (mixWhite palette.cyan 0.45) "cyan";
+      syntaxOperator = d (darkOnDark 0.7) "accent";
+      syntaxPunctuation = d (darkOnDark 0.85) "fg";
+    };
+  };
+  opencodeThemeName = themeName;
 in
 {
   options.themes.theme = lib.mkOption {
@@ -139,6 +242,19 @@ in
     # hyprpaper (wallpaper follows the active theme)
     xdg.configFile."hypr/hyprpaper.conf".text = hyprpaperConf;
     xdg.configFile."hypr/hyprpaper.conf".force = true;
+
+    # opencode TUI follows the active theme
+    xdg.configFile."opencode/themes/${opencodeThemeName}.json" = {
+      text = builtins.toJSON oc;
+      force = true;
+    };
+    xdg.configFile."opencode/tui.json" = {
+      text = builtins.toJSON {
+        "$schema" = "https://opencode.ai/tui.json";
+        theme = opencodeThemeName;
+      };
+      force = true;
+    };
 
     # Ghostty
     programs.ghostty.themes.${themeName} = ghosttyTheme;
