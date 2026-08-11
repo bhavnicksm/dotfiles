@@ -8,11 +8,11 @@
         "nixpkgs-unstable": "nixpkgs-unstable"
       },
       "locked": {
-        "lastModified": 1786399833,
-        "narHash": "sha256-hViwGTqlbdR7W3aRvFaqFLGDGSj+P00w3X4WVLWdiMA=",
+        "lastModified": 1786417450,
+        "narHash": "sha256-WOh/wAKnAQ6LFakINILi8DGHQqgBVTNYaHI3jhgk1RM=",
         "ref": "refs/heads/main",
-        "rev": "86d8632319f005d87b8e4742e5154b0825e184e2",
-        "revCount": 31,
+        "rev": "8065e1e937c9e36fb8f5fa016379c6fbdf99cbef",
+        "revCount": 34,
         "type": "git",
         "url": "ssh://git@github.com/bhavnicksm/bnixos.git"
       },
