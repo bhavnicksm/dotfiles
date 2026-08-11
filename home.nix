@@ -217,6 +217,7 @@
 
     # Additional CLI utils
     btop
+    gh
 
     # Desktop applications 
     firefox
