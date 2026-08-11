@@ -8,9 +8,15 @@
     nixos-hardware.follows = "bnixos/nixos-hardware";
     home-manager.follows = "bnixos/home-manager";
     nixpkgs-unstable.follows = "bnixos/nixpkgs-unstable";
+
+    # Secret provisioning (sops)
+    sops-nix = {
+      url = "github:Mic92/sops-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = { self, bnixos, nixpkgs, nixos-hardware, home-manager, ... }@inputs: {
+  outputs = { self, bnixos, nixpkgs, nixos-hardware, home-manager, sops-nix, ... }@inputs: {
     nixosConfigurations.dotfiles = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
       specialArgs = { inherit inputs; };

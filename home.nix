@@ -1,10 +1,44 @@
-{ config, pkgs, ... }:
+{ config, pkgs, inputs, lib, ... }:
 
 {
+  imports = [
+    inputs.sops-nix.homeManagerModules.sops
+  ];
+
   home.username = "bhavnick";
   home.homeDirectory = "/home/bhavnick";
   home.stateVersion = "25.05";
-  
+
+  # Manage zsh + starship as the default shell.
+  # OPENROUTER_API_KEY (hm-session-vars) is sourced via ~/.zshrc.
+  programs.zsh = {
+    enable = true;
+    defaultKeymap = "emacs";
+    enableCompletion = true;
+    enableAutosuggestions = true;
+    syntaxHighlighting.enable = true;
+    historySubstringSearch.enable = true;
+  };
+
+  # Fuzzy finder: Ctrl+R history menu, Ctrl+T files, Alt+C cd
+  programs.fzf = {
+    enable = true;
+    enableZshIntegration = true;
+  };
+
+  # The authoritative prompt config lives at config/starship.toml.
+  programs.starship = {
+    enable = true;
+    settings = builtins.fromTOML (builtins.readFile ./config/starship.toml);
+  };
+
+  # Sops secrets
+  sops = {
+    age.keyFile = "/home/bhavnick/.config/sops/age/keys.txt";
+    defaultSopsFile = ./secrets.yaml;
+    secrets.OPENROUTER_API_KEY = { };
+  };
+
   # Setting the cursor theme to use
   home.pointerCursor = {
     gtk.enable = true;
@@ -110,6 +144,8 @@
     
     # Basic Hyprland utils
     ghostty
+    zsh
+    starship
     opencode
     fuzzel
     waybar
@@ -129,6 +165,8 @@
     # Utils for secrets
     libsecret
     gnome-keyring
+    age
+    sops
 
     # Additional CLI utils
     btop
@@ -149,6 +187,17 @@
     enable = true;
     settings = {
       theme = "flexoki-light";
+      keybind = [
+        "ctrl+shift+h=new_split:left"
+        "ctrl+shift+j=new_split:down"
+        "ctrl+shift+k=new_split:up"
+        "ctrl+shift+l=new_split:right"
+        "ctrl+shift+p=write_screen_file:paste"
+        "alt+h=goto_split:left"
+        "alt+j=goto_split:down"
+        "alt+k=goto_split:up"
+        "alt+l=goto_split:right"
+      ];
     };
   };
 
@@ -195,11 +244,14 @@
   #  /etc/profiles/per-user/bhavnick/etc/profile.d/hm-session-vars.sh
   #
   home.sessionVariables = {
-    # EDITOR = "emacs";
+    OPENROUTER_API_KEY = "$(cat ${config.sops.secrets.OPENROUTER_API_KEY.path})";
   };
 
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
+
+  # Managed dotfiles — single source of truth is ./config/ (see config.nix)
+  xdg.configFile = import ./config.nix { inherit lib; };
 
   # Personal helper scripts (launcher, theme selector)
   home.file = {
