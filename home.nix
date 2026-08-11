@@ -98,6 +98,9 @@
   # Add Hyprland configuration to the home
   wayland.windowManager.hyprland = {
     enable = true;
+    # stateVersion 26.05 defaults HM to lua config; our settings + theme
+    # module are hyprlang-shaped, so pin hyprlang (migrate to lua later).
+    configType = "hyprlang";
     settings = {
       # Basic Settings
       "$mod" = "SUPER";
