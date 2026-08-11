@@ -8,7 +8,7 @@
 
   home.username = "bhavnick";
   home.homeDirectory = "/home/bhavnick";
-  home.stateVersion = "25.05";
+  home.stateVersion = "26.05";
 
   # Declarative theme (Omarchy-style). Options are the keys of
   # themes/palettes.nix: "white" | "gruvbox-light". Switch by editing this
@@ -21,9 +21,9 @@
     enable = true;
     defaultKeymap = "emacs";
     enableCompletion = true;
-    enableAutosuggestions = true;
     syntaxHighlighting.enable = true;
     historySubstringSearch.enable = true;
+    autosuggestion.enable = true;
   };
 
   # Fuzzy finder: Ctrl+R history menu, Ctrl+T files, Alt+C cd
@@ -134,6 +134,7 @@
       bind = [
         "$mod, Return, exec, ghostty"
         "$mod, SPACE, exec, ~/.local/bin/launcher.sh"
+	"$mod, B, exec, ~/.local/bin/bt-menu.sh"
 	"$mod, W, killactive,"
 	"$mod, M, exit,"
 	"$mod, E, exec, thunar"
@@ -229,6 +230,7 @@
 
     # Additional CLI utils
     btop
+    bluez
 
 # Desktop applications 
     firefox
@@ -300,6 +302,25 @@
     viAlias = true;
     vimAlias = true;
 
+    # HM owns ~/.config/nvim/init.lua (declarative, idiomatic). The generated
+    # plugin packpath setup is prepended automatically.
+    initLua = ''
+      -- Line numbers
+      vim.opt.number = true           -- Show line numbers
+      vim.opt.relativenumber = true   -- Show relative line numbers (optional)
+
+      -- Basic settings that work well with line numbers
+      vim.opt.cursorline = true       -- Highlight current line
+      vim.opt.signcolumn = "yes"      -- Always show sign column
+
+      -- Gruvbox theme settings
+      vim.opt.termguicolors = true    -- Enable 24-bit RGB colors
+      vim.opt.background = "light"    -- Use light background
+
+      -- gruvbox-nvim ships with this configuration (see plugins below)
+      vim.cmd.colorscheme("gruvbox")
+    '';
+
     # Adding the vim plugins here
     plugins = with pkgs.vimPlugins; [
       gruvbox-nvim
@@ -352,5 +373,13 @@
     ".local/bin/launcher.sh".executable = true;
     ".local/bin/theme-selector.sh".source = ./bin/theme-selector.sh;
     ".local/bin/theme-selector.sh".executable = true;
+    ".local/bin/bt-menu.sh".source = ./bin/bt-menu.sh;
+    ".local/bin/bt-menu.sh".executable = true;
+    ".local/bin/bt-power.sh".source = ./bin/bt-power.sh;
+    ".local/bin/bt-power.sh".executable = true;
+    ".local/bin/bt-device.sh".source = ./bin/bt-device.sh;
+    ".local/bin/bt-device.sh".executable = true;
+    ".local/bin/bt-scan.sh".source = ./bin/bt-scan.sh;
+    ".local/bin/bt-scan.sh".executable = true;
   };
 }

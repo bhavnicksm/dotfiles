@@ -43,6 +43,13 @@ in
   networking.hostName = "bnixos";
   time.timeZone = "America/Los_Angeles";
 
+  # Bluetooth: kernel module, bluetoothd service, and (bluez) CLI tools for
+  # the bt-* menu scripts in bin/.
+  hardware.bluetooth = {
+    enable = true;
+    powerOnBoot = true; # rfkill still wins until toggled on via bt-menu
+  };
+
   # NixOS-level zsh support (PATH for the login shell)
   programs.zsh.enable = true;
 

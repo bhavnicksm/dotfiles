@@ -7,7 +7,6 @@
     nixpkgs.follows = "bnixos/nixpkgs";
     nixos-hardware.follows = "bnixos/nixos-hardware";
     home-manager.follows = "bnixos/home-manager";
-    nixpkgs-unstable.follows = "bnixos/nixpkgs-unstable";
 
     # Secret provisioning (sops)
     sops-nix = {
