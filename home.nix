@@ -26,6 +26,48 @@
     enableZshIntegration = true;
   };
 
+  # Modern ls (eza) with icons and git status
+  programs.eza = {
+    enable = true;
+    enableZshIntegration = true;
+    icons = "auto";
+    git = true;
+    extraOptions = [ "--group-directories-first" ];
+  };
+
+  # Smart cd: replace cd with zoxide (fuzzy match, falls back to real cd)
+  programs.zoxide = {
+    enable = true;
+    enableZshIntegration = true;
+    options = [ "--cmd cd" ];
+  };
+
+  # Terminal file manager
+  programs.yazi = {
+    enable = true;
+    enableZshIntegration = true;
+  };
+
+  # Syntax-highlighted pager for man/cat
+  programs.bat = {
+    enable = true;
+    config = {
+      theme = "ansi"; # Follows the terminal palette (flexoki-light)
+      pager = "less -FR";
+    };
+  };
+
+  # Fast content search: rg <pattern> (also backs fzf's Ctrl+T)
+  programs.ripgrep = {
+    enable = true;
+    arguments = [ "--smart-case" ];
+  };
+
+  # Interactive TUI for git operations
+  programs.lazygit = {
+    enable = true;
+  };
+
   # The authoritative prompt config lives at config/starship.toml.
   programs.starship = {
     enable = true;
@@ -193,6 +235,8 @@
     settings = {
       theme = "flexoki-light";
       font-family = "JetBrainsMono Nerd Font";
+      font-size = 10;
+      gtk-custom-css = "~/.config/ghostty/compact-tabs.css";
       keybind = [
         "ctrl+shift+h=new_split:left"
         "ctrl+shift+j=new_split:down"
@@ -206,6 +250,36 @@
       ];
     };
   };
+
+  # Compact Ghostty tab bar (requires gtk-custom-css above)
+  home.file.".config/ghostty/compact-tabs.css".text = ''
+    tabbar tabbox {
+      min-height: 18px;
+      padding-top: 1px;
+      padding-bottom: 1px;
+    }
+
+    tabbar tab {
+      min-height: 14px;
+      padding: 0;
+    }
+
+    tabbar tab label,
+    tabbar .start-action label,
+    tabbar .end-action label {
+      font-size: 9px;
+    }
+
+    tabbar tab button.image-button {
+      min-width: 18px;
+      min-height: 18px;
+    }
+
+    tabbar .start-action,
+    tabbar .end-action {
+      padding: 1px;
+    }
+  '';
 
   # Adding the neovim options here
   programs.neovim = {
