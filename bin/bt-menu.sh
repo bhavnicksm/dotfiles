@@ -79,6 +79,14 @@ forget_device() {
 }
 
 scan_and_pair() {
+  # Scanning on a blocked/powered-off adapter does nothing; power it on first
+  # (same precondition bt-device.sh enforces for its actions).
+  if ! is_powered; then
+    "$SCRIPT_DIR/bt-power.sh" on || {
+      notify "Could not power Bluetooth on — cannot scan"
+      return 0
+    }
+  fi
   notify "Scanning for new devices…"
   local -a labels=()
   local -a macs=()
@@ -177,7 +185,7 @@ main_menu() {
       labels+=("$name")
     fi
     actions+=("device:$mac|$name")
-  done < <(bluetoothctl devices | sed 's/^Device //')
+  done < <(timeout 3s bluetoothctl devices | sed 's/^Device //')
 
   if ! show_menu "Bluetooth" labels actions; then
     return 1 # dismissed at the top level → quit

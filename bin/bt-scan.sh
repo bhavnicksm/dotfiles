@@ -14,7 +14,7 @@ SCAN_SECONDS=${1:-7}
 bluetoothctl scan on >/dev/null 2>&1 &
 scan_pid=$!
 sleep "$SCAN_SECONDS"
-bluetoothctl scan off >/dev/null 2>&1 || true
+timeout 3s bluetoothctl scan off >/dev/null 2>&1 || true
 kill "$scan_pid" 2>/dev/null || true
 wait "$scan_pid" 2>/dev/null || true
 
