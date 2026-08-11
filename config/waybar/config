@@ -1,18 +1,29 @@
 {
+    "reload_style_on_change": true,
     "layer": "top",
     "position": "top",
-    "reload_style_on_change": true,
-    "modules-left": ["clock", "custom/sep", "tray"],
-    "modules-center": ["hyprland/workspaces"],
-    "modules-right": ["group/expand", "custom/sep", "pulseaudio", "custom/sep", "bluetooth", "custom/sep", "network", "custom/sep", "battery"],
+    "spacing": 0,
+    "height": 26,
+    "width": 0,
+    "modules-left": ["custom/omarchy", "hyprland/workspaces"],
+    "modules-center": ["clock"],
+    "modules-right": ["group/expand", "pulseaudio", "bluetooth", "network", "battery", "tray"],
 
+    "custom/omarchy": {
+        "format": "󰀻",
+        "on-click": "~/.local/bin/launcher.sh",
+        "on-click-right": "ghostty",
+        "tooltip": false
+    },
 
     "hyprland/workspaces": {
+        "on-click": "activate",
         "format": "{id}",
         "persistent-workspaces": {
-            "*": [ 1,2,3,4,5 ]
+            "*": [ 1, 2, 3, 4, 5 ]
         }
     },
+
     "clock": {
         "format": "{:%a, %b %d · %I:%M %p}",
         "tooltip-format": "<tt>{calendar}</tt>",
@@ -26,15 +37,67 @@
             "on-click": "shift_up"
         }
     },
-    "network": {
-        "format-wifi": "󰖩 ",
-    	"format-ethernet": "󰈀 ",
-    	"format-disconnected": "󰖪 ",
-    	"tooltip-format-disconnected": "Disconnected",
-    	"tooltip-format-wifi": "{essid} ({signalStrength}%)",
-    	"tooltip-format-ethernet": "{ifname}",
-    	"on-click": "kitty nmtui"
+
+    "group/expand": {
+        "orientation": "horizontal",
+        "drawer": {
+            "transition-duration": 600,
+            "transition-to-left": true,
+            "click-to-reveal": true
+        },
+        "modules": ["custom/expand", "custom/colorpicker", "cpu", "memory", "temperature", "custom/endpoint"]
     },
+    "custom/expand": {
+        "format": "󰍜",
+        "tooltip": false
+    },
+    "custom/colorpicker": {
+        "format": "{}",
+        "return-type": "json",
+        "interval": "once",
+        "exec": "~/.config/waybar/scripts/colorpicker.sh -j",
+        "on-click": "~/.config/waybar/scripts/colorpicker.sh",
+        "signal": 1
+    },
+    "custom/endpoint": {
+        "format": "|",
+        "tooltip": false
+    },
+
+    "cpu": {
+        "interval": 5,
+        "format": "󰍛",
+        "on-click": "ghostty -e btop",
+        "tooltip": true
+    },
+    "memory": {
+        "format": "󰍛 {percentage}%",
+        "tooltip-format": "RAM: {used:0.1f}G / {total:0.1f}G"
+    },
+    "temperature": {
+        "critical-threshold": 80,
+        "format": "󰔏 {temperatureC}°C",
+        "tooltip-format": "Temperature: {temperatureC}°C"
+    },
+
+    "pulseaudio": {
+        "format": "{icon} {volume}%",
+        "format-bluetooth": "{icon}  {volume}%",
+        "format-muted": "󰝟 {volume}%",
+        "format-icons": {
+            "headphone": "󰋋",
+            "hands-free": "󰋎",
+            "headset": "󰋎",
+            "phone": "󰄜",
+            "portable": "󰦢",
+            "car": "󰄋",
+            "default": ["󰕿", "󰖀", "󰕾"]
+        },
+        "scroll-step": 5,
+        "on-click": "pavucontrol",
+        "tooltip-format": "{desc} | {volume}%"
+    },
+
     "bluetooth": {
         "format-on": "󰂯",
         "format-off": "BT-off",
@@ -46,9 +109,20 @@
         "tooltip-format-enumerate-connected": "{device_alias}\n{device_address}",
         "tooltip-format-enumerate-connected-battery": "{device_alias}\n{device_address}\n{device_battery_percentage}%",
         "on-click-right": "blueman-manager"
-    }, 
+    },
+
+    "network": {
+        "format-wifi": "󰖩 ",
+        "format-ethernet": "󰈀 ",
+        "format-disconnected": "󰖪 ",
+        "tooltip-format-disconnected": "Disconnected",
+        "tooltip-format-wifi": "{essid} ({signalStrength}%)",
+        "tooltip-format-ethernet": "{ifname}",
+        "on-click": "ghostty nmtui"
+    },
+
     "battery": {
-        "interval":30,
+        "interval": 30,
         "states": {
             "good": 95,
             "warning": 30,
@@ -67,67 +141,9 @@
             "󰁹"
         ]
     },
-    "custom/expand": {
-      "format": "󰍜",
-      "tooltip": false
-    },
-    "custom/sep": {
-      "format": "|",
-      "tooltip": false
-    },
-    "custom/endpoint":{
-        "format": "|",
-        "tooltip": false
-    },
-    "group/expand": {
-        "orientation": "horizontal",
-        "drawer": {
-            "transition-duration": 600,
-            "transition-to-left": true,
-            "click-to-reveal": true
-        },
-        "modules": ["custom/expand", "custom/colorpicker","cpu","memory","temperature","custom/endpoint"]
-    },
-    "custom/colorpicker": {
-        "format": "{}",
-        "return-type": "json",
-        "interval": "once",
-        "exec": "~/.config/waybar/scripts/colorpicker.sh -j",
-        "on-click": "~/.config/waybar/scripts/colorpicker.sh",
-        "signal": 1
-    },
-    "cpu": {
-        "format": "󰻠",
-        "tooltip": true
-    },
-    "memory": {
-      	"format": "󰍛 {percentage}%",
-    	"tooltip-format": "RAM: {used:0.1f}G / {total:0.1f}G"
-    },
-    "temperature": {
-    	"critical-threshold": 80,
-    	"format": "󰔏 {temperatureC}°C",
-    	"tooltip-format": "Temperature: {temperatureC}°C"
-    },
+
     "tray": {
         "icon-size": 14,
         "spacing": 10
-    },
-    "pulseaudio": {
-        "format": "{icon} {volume}%",
-    	"format-bluetooth": "{icon}  {volume}%",
-    	"format-muted": "󰝟 {volume}%",
-    	"format-icons": {
-        	"headphone": "󰋋",
-		"hands-free": "󰋎",
-		"headset": "󰋎",
-        	"phone": "󰄜",
-        	"portable": "󰦢",
-        	"car": "󰄋",
-        	"default": ["󰕿", "󰖀", "󰕾"]
-    	},
-    	"scroll-step": 5,
-   	"on-click": "pavucontrol",
-    	"tooltip-format": "{desc} | {volume}%"
-    },
+    }
 }

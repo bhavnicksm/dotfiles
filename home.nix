@@ -3,11 +3,17 @@
 {
   imports = [
     inputs.sops-nix.homeManagerModules.sops
+    ./themes/theme-module.nix
   ];
 
   home.username = "bhavnick";
   home.homeDirectory = "/home/bhavnick";
   home.stateVersion = "25.05";
+
+  # Declarative theme (Omarchy-style). Options are the keys of
+  # themes/palettes.nix: "white" | "gruvbox-light". Switch by editing this
+  # one line and running `home-manager switch`. See docs/theming.md.
+  themes.theme = "white";
 
   # Manage zsh + starship as the default shell.
   # OPENROUTER_API_KEY (hm-session-vars) is sourced via ~/.zshrc.
@@ -101,8 +107,8 @@
         gaps_in = 3;      # Gap between windows (default is 5)
         gaps_out = 6;     # Gap between windows and screen edge (default is 20)
         border_size = 2;  # Window border thickness (default is 1)
-        "col.active_border" = "rgb(000000)";    # Black active border
-        "col.inactive_border" = "rgb(928374)";  # Gruvbox gray for inactive
+        # "col.active_border" / "col.inactive_border" come from the active
+        # theme via themes/theme-module.nix.
       };
 
       # Subtle rounded window corners
@@ -217,7 +223,6 @@
 
     # Additional CLI utils
     btop
-    gh
 
     # Desktop applications 
     firefox
@@ -230,11 +235,11 @@
   # Setting the font
   fonts.fontconfig.enable = true;
 
-  # Terminal emulator: Ghostty with the Flexoki light theme
+  # Terminal emulator: Ghostty themed from themes/palettes.nix via
+  # themes/theme-module.nix (theme = programs.ghostty.themes.<theme>).
   programs.ghostty = {
     enable = true;
     settings = {
-      theme = "flexoki-light";
       font-family = "JetBrainsMono Nerd Font";
       font-size = 10;
       gtk-custom-css = "~/.config/ghostty/compact-tabs.css";

@@ -2,7 +2,7 @@
 
 #* Name of a btop++/bpytop/bashtop formatted ".theme" file, "Default" and "TTY" for builtin themes.
 #* Themes should be placed in "../share/btop/themes" relative to binary or "$HOME/.config/btop/themes"
-color_theme = "/nix/store/acqjhjlz47ra1lkmccg9hh8c26yg57hv-btop-1.4.4/share/btop/themes/gruvbox_light.theme"
+color_theme = "{{ color_theme }}"
 
 #* If the theme set background should be shown, set to False if you want terminal background transparency.
 theme_background = True
