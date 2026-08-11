@@ -224,8 +224,10 @@
     # Additional CLI utils
     btop
 
-    # Desktop applications 
+# Desktop applications 
     firefox
+    spotify
+    code-cursor-fhs
     zed-editor-fhs
 
     # Miscellaneous pkgs (fonts etc.)

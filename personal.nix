@@ -57,6 +57,12 @@ in
   services.displayManager.sddm.theme = lib.mkForce "white";
   environment.systemPackages = [ sddmTheme ];
 
+  # Tailscale mesh VPN daemon
+  services.tailscale.enable = true;
+
+  # Allow only clearly-flagged unfree packages we intentionally use.
+  nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [ "spotify" "cursor" ];
+
   # Greeter + plymouth render JetBrains Mono (user-level HM fonts are not
   # visible to processes running as root/sddm).
   fonts.packages = [ pkgs.nerd-fonts.jetbrains-mono ];

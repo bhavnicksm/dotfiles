@@ -1,4 +1,5 @@
-# Omarchy-style hyprlock — blurred wallpaper + centered password field.
+# Omarchy-style hyprlock — matches the SDDM greeter: dimmed wallpaper,
+# centered rounded password field.
 # Colors are rendered from themes/palettes.nix by themes/theme-module.nix
 # ({{ lockInner }} etc. are rgba() strings computed at build time).
 
