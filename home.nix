@@ -187,6 +187,7 @@
     enable = true;
     settings = {
       theme = "flexoki-light";
+      font-family = "JetBrainsMono Nerd Font";
       keybind = [
         "ctrl+shift+h=new_split:left"
         "ctrl+shift+j=new_split:down"
