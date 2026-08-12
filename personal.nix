@@ -58,6 +58,48 @@ in
     isNormalUser = true;
     extraGroups = [ "wheel" "networkmanager" ]; # Enable ‘sudo’ for the user.
     shell = pkgs.zsh;
+
+    # Public keys allowed to SSH in as this user. Only keys listed here can
+    # get in — see the openssh block below (PasswordAuthentication=false).
+    openssh.authorizedKeys.keys = [
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIqd125sj1Xv1jPykhtZrq2aIAs35qCbO/KCWC3hJJ7F bhavnicksm@gmail.com"
+    ];
+  };
+
+  # Secure by default SSH: daemon ran only because we deliberately flipped
+  # this on; accepts key auth for a curated list of users (no passwords),
+  # never root, no X11 forwarding, and logs verbosely.
+  services.openssh = {
+    enable = true;
+    # openFirewall defaults to true → adds a global allow-22 rule on EVERY
+    # interface, which would undo the LAN+tailscale scoping below. The
+    # explicit per-interface firewall rules handle reachability instead.
+    openFirewall = false;
+    settings = {
+      # Keys only — a lost key is far preferable to a brute-forced password.
+      PasswordAuthentication = false;
+      KbdInteractiveAuthentication = false;
+      # Nobody logs in as root over SSH; sudo does that, authenticated locally.
+      PermitRootLogin = "no";
+      # Only these (existing) users may log in over SSH.
+      AllowUsers = [ "bhavnick" ];
+      # No remote X11 / agent trust pushes.
+      X11Forwarding = false;
+      AllowAgentForwarding = false;
+      # Better bad-login accounting.
+      LogLevel = "VERBOSE";
+      # Maximum auth tries before disconnecting; fewer = less brute-force room.
+      MaxAuthTries = 3;
+    };
+  };
+
+  # Reachability for sshd: open port 22 **only** on the LAN wifi interface
+  # and the tailscale interface. Nothing is exposed to the public internet;
+  # the rest of the firewall stays at its default (drop). Re-audit if the
+  # wifi interface name changes.
+  networking.firewall.interfaces = {
+    "wlp192s0".allowedTCPPorts = [ 22 ];
+    "tailscale0".allowedTCPPorts = [ 22 ];
   };
 
   # Themed, Omarchy-style login screen (overrides bnixos's catppuccin theme)
