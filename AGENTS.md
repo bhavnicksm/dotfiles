@@ -131,11 +131,102 @@ raises, before you boot into a bad config.
 
 Full `nix flake check`/eval needs the private SSH `bnixos` input and network.
 
+## Workflow playbook (do these every time)
+
+### Hyprland Lua change → validate before claiming it works
+
+1. Edit `home.nix` hyprland `settings`.
+2. `nix-instantiate --parse home.nix` (syntax).
+3. Rebuild + grab the generated lua:
+   ```sh
+   TOP=$(nix build .#nixosConfigurations.dotfiles.config.system.build.toplevel --no-link --print-out-paths | tail -1)
+   LUA=$(nix-store -qR "$TOP" | grep 'hm_hypr.*hyprland.lua' | head -1)
+   ```
+4. Validate (catches `attempt to call nil value` and bad syntax):
+   ```sh
+   lua bin/hl-mock.lua "$LUA"          # API names vs real stubs
+   luac -p "$LUA"                       # Lua syntax
+   ```
+5. The plain-config sections must be under `config = { … }` → `hl.config({ … })`.
+   There is **no** `hl.general` / `hl.decoration` / `hl.animations` function.
+   There is **no top-level `hl.focus`** — workspace switch is
+   `hl.dsp.focus({ workspace = … })`.
+
+### A package regressed on the 26.05 branch
+
+Given 26.05 froze some tools at broken versions, for any suspect package:
+
+1. Check versions across branches and what you're actually solving:
+   ```sh
+   nix eval --impure --raw --expr 'let p = (builtins.getFlake "github:nixos/nixpkgs/nixos-26.05").legacyPackages.x86_64-linux.<pkg>; in p.version'
+   ```
+2. If the branch version is broken, you can **pin a good one via overlay** (like
+   `opencode` 1.18.13 from `nixpkgs-unstable` in `personal.nix`) — or **migrate
+   config** to the new version's format (like `hyprpaper` 0.8) instead of
+   pinning. Prefer migrating when it's just a config break.
+3. To test a package from another branch live **before** touching the flake:
+   ```sh
+   nix build --impure --no-link --print-out-paths --expr \
+     'let f = builtins.getFlake "github:nixos/nixpkgs/<branch>"; in f.legacyPackages.x86_64-linux.<pkg>'
+   ```
+   then run the resulting binary against the live session.
+4. Overlay pattern (in `personal.nix`):
+   ```nix
+   nixpkgs.overlays = [ (final: prev: {
+     <pkg> = inputs.<nixpkgs-branch>.legacyPackages.${pkgs.stdenv.hostPlatform.system}.<pkg>;
+   }) ];
+   ```
+   New inputs go in `flake.nix`; run `nix flake lock` after adding one.
+
+### Declarative autostart (systemd user services)
+
+- Daemons (waybar, dunst, hyprpaper) are `systemd.user.services`, **not** Lua
+  hooks: `PartOf = [ "hyprland-session.target" ]` + `WantedBy =
+  "hyprland-session.target"`, `Restart = "on-failure"`.
+- **Never add `After = hyprland-session.target`** — combined with the WantedBy
+  it creates an ordering cycle and systemd deletes the start job (daemons
+  silently never launch; watch for it in `journalctl --user -u <svc>`).
+- Autostart one-shots are handled declaratively too: gnome-keyring via
+  `services.gnome-keyring`, cursor theme via `home.sessionVariables`
+  (`HYPRCURSOR_*`/`XCURSOR_*`) — no `hyprctl setcursor` exec needed.
+
+### hyprpaper ≥ 0.8 (hyprtoolkit rewrite)
+
+Config format broke: no `preload`, no `wallpaper = monitor,path` one-liner.
+Use anonymous blocks (config lives in `themes/templates/hyprpaper.conf.tpl`):
+```ini
+wallpaper {
+    monitor =        # empty = fallback for all monitors
+    path = <path>
+    fit_mode = cover
+}
+splash = false
+```
+`~/.config/hypr/hyprpaper.conf` is HM-managed; the running daemon reads the
+default path. A `-c <path>` run is how you test configs live.
+
+### Live-system testing without a reboot
+
+- systemd units: `systemctl --user disable --now <svc>`, copy corrected units
+  into `~/.config/systemd/user/`, `daemon-reload`, `enable`, then `restart
+  hyprland-session.target`. (`pgrep -x waybar` misses `.waybar-wrapped` — use
+  `systemctl --user status` or `pgrep -f`.)
+- Hyprland state: `hyprctl layers`, `hyprctl getoption <opt>`, `grim` +
+  screenshot.
+
+### Finishing
+
+Before reporting done: `git status --short` clean, commit with a repo-style
+message, `git push origin nixos`. Only bump `main` when asked.
+
 ## Secrets
 
 sops-nix (`defaultSopsFile ./secrets.yaml`, age key at
-`~/.config/sops/age/keys.txt`). `OPENROUTER_API_KEY` is the only secret and is
-loaded into `home.sessionVariables`. See `docs/sops-session-vars.md`.
+`~/.config/sops/age/keys.txt`). `home.sessionVariables` maps over **all**
+secrets (`builtins.mapAttrs`), exporting each as an env var named after it —
+adding a secret to `secrets.yaml` exports it automatically. Env vars are
+visible to all processes, so prefer file paths unless a secret must be in the
+environment. See `docs/sops-session-vars.md`.
 
 ## Nix style
 
