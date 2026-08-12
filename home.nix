@@ -143,21 +143,10 @@
           };
         };
 
-        # Autostart (was exec-once) -> hl.on("hyprland.start", …)
-        on = {
-          _args = [
-            "hyprland.start"
-            (inline ''
-              function()
-                -- Waybar/dunst/hyprpaper run as systemd.user.services
-                -- (After=hyprland-session.target); gnome-keyring is started
-                -- by services.gnome-keyring. This hook only does one-shot
-                -- setup commands.
-                hl.exec_cmd("hyprctl setcursor Bibata-Modern-Classic 16")
-              end
-            '')
-          ];
-        };
+        # No autostart hook: waybar/dunst/hyprpaper are systemd.user.services,
+        # gnome-keyring via services.gnome-keyring, and the cursor theme via
+        # home.sessionVariables (HYPRCURSOR_*/XCURSOR_*). The module's systemd
+        # activation hook is generated automatically.
 
         # Keybindings for Hyprland
         bind = [
@@ -433,6 +422,13 @@
   #
   home.sessionVariables = {
     OPENROUTER_API_KEY = "$(cat ${config.sops.secrets.OPENROUTER_API_KEY.path})";
+
+    # Cursor theme for Hyprland/hyprcursor + GTK (declarative replacement for
+    # the old `hyprctl setcursor` exec; matches home.pointerCursor below).
+    XCURSOR_THEME = "Bibata-Modern-Classic";
+    XCURSOR_SIZE = "16";
+    HYPRCURSOR_THEME = "Bibata-Modern-Classic";
+    HYPRCURSOR_SIZE = "16";
   };
 
   # Let Home Manager install and manage itself.
