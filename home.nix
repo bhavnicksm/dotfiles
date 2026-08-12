@@ -420,16 +420,20 @@
   #
   #  /etc/profiles/per-user/bhavnick/etc/profile.d/hm-session-vars.sh
   #
-  home.sessionVariables = {
-    OPENROUTER_API_KEY = "$(cat ${config.sops.secrets.OPENROUTER_API_KEY.path})";
-
-    # Cursor theme for Hyprland/hyprcursor + GTK (declarative replacement for
-    # the old `hyprctl setcursor` exec; matches home.pointerCursor below).
-    XCURSOR_THEME = "Bibata-Modern-Classic";
-    XCURSOR_SIZE = "16";
-    HYPRCURSOR_THEME = "Bibata-Modern-Classic";
-    HYPRCURSOR_SIZE = "16";
-  };
+  home.sessionVariables =
+    # Export EVERY sops secret as an env var named after the secret
+    # (e.g. OPENROUTER_API_KEY -> "$(cat <decrypted path>)").
+    # NOTE: env vars are visible to every process + child (/proc/<pid>/environ,
+    # logs); prefer read-from-file unless a secret must be in the environment.
+    (builtins.mapAttrs (name: _: "$(cat ${config.sops.secrets.${name}.path})") config.sops.secrets)
+    // {
+      # Cursor theme for Hyprland/hyprcursor + GTK (declarative replacement
+      # for the old `hyprctl setcursor` exec; matches home.pointerCursor below).
+      XCURSOR_THEME = "Bibata-Modern-Classic";
+      XCURSOR_SIZE = "16";
+      HYPRCURSOR_THEME = "Bibata-Modern-Classic";
+      HYPRCURSOR_SIZE = "16";
+    };
 
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
