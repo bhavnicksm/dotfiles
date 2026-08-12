@@ -19,24 +19,64 @@
         "bnixos"
       ]
     },
+    "bipc": {
+      "inputs": {
+        "nixpkgs": [
+          "bnixos",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "path": "./flakes/bipc",
+        "type": "path"
+      },
+      "original": {
+        "path": "./flakes/bipc",
+        "type": "path"
+      },
+      "parent": [
+        "bnixos"
+      ]
+    },
+    "blaunch": {
+      "inputs": {
+        "nixpkgs": [
+          "bnixos",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "path": "./flakes/blaunch",
+        "type": "path"
+      },
+      "original": {
+        "path": "./flakes/blaunch",
+        "type": "path"
+      },
+      "parent": [
+        "bnixos"
+      ]
+    },
     "bnixos": {
       "inputs": {
         "bbar": "bbar",
+        "bipc": "bipc",
+        "blaunch": "blaunch",
         "home-manager": "home-manager",
         "nixos-hardware": "nixos-hardware",
         "nixpkgs": "nixpkgs"
       },
       "locked": {
-        "lastModified": 1786572833,
-        "narHash": "sha256-0FWnkk1k6mdX17CiMRLBvpqNlXROYVoT8qJv8gEJf0I=",
-        "ref": "bbar/quickshell",
-        "rev": "e9775c42c4a6c4754f4c0d4fccf05fbed732105f",
-        "revCount": 65,
+        "lastModified": 1786578127,
+        "narHash": "sha256-btIcYOXMVY3+MNdoTUOaougmSeOsqw9Z8ewcQs3ful8=",
+        "ref": "blaunch/v1",
+        "rev": "20dfc8a1729201981c8678307816a443d2c2d9ba",
+        "revCount": 66,
         "type": "git",
         "url": "ssh://git@github.com/bhavnicksm/bnixos.git"
       },
       "original": {
-        "ref": "bbar/quickshell",
+        "ref": "blaunch/v1",
         "type": "git",
         "url": "ssh://git@github.com/bhavnicksm/bnixos.git"
       }
