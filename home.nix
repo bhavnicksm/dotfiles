@@ -113,7 +113,7 @@
         exec  = cmd: inline ''hl.dsp.exec_cmd("${cmd}")'';
         focus = dir: inline ''hl.dsp.focus({ direction = "${dir}" })'';
         swap  = dir: inline ''hl.dsp.window.swap({ direction = "${dir}" })'';
-        ws    = w: inline ''hl.focus.workspace("${w}")'';
+        ws    = w: inline ''hl.dsp.focus({ workspace = "${w}" })'';
         movews = w: inline ''hl.dsp.window.move({ workspace = "${w}", follow = true })'';
       in
       {

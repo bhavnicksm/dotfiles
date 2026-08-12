@@ -117,6 +117,17 @@ nix shell nixpkgs#shellcheck -c shellcheck bin/*.sh
 nix-instantiate --parse home.nix     # syntax check without flake eval
 ~/.local/bin/bt-power.sh is-on; echo $?   # exit-contract smoke test
 ```
+Hyprland Lua config can be validated **without a running compositor** using the
+mock `hl` API mirroring the real stubs:
+```sh
+nix build .#nixosConfigurations.dotfiles.config.system.build.toplevel --no-link
+LUA=$(nix-build '<nixpkgs>' -A lua 2>/dev/null || true)
+# or use the store lua, then:
+lua bin/hl-mock.lua "<path-to-generated-hyprland.lua>"
+```
+`bin/hl-mock.lua` fails with `attempt to index/call a nil value (field '<name>')`
+for any unknown top-level/`hl.dsp.*` name — catching the same errors Hyprland
+raises, before you boot into a bad config.
 
 Full `nix flake check`/eval needs the private SSH `bnixos` input and network.
 

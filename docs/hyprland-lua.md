@@ -37,7 +37,7 @@ call in `hyprland.lua`:
 | `pseudo,` | `hl.dsp.window.pseudo({ action = "toggle" })` |
 | `movefocus, l/r/u/d` | `hl.dsp.focus({ direction = "l" })` |
 | `swapwindow, l/r/u/d` | `hl.dsp.window.swap({ direction = "l" })` |
-| `workspace, N` / `e+1` / `e-1` | `hl.focus.workspace("N")` / `("e+1")` / `("e-1")` |
+| `workspace, N` / `e+1` / `e-1` | `hl.dsp.focus({ workspace = "N" })` / `({ workspace = "e+1" })` |
 | `movetoworkspace, N` | `hl.dsp.window.move({ workspace = "N", follow = true })` |
 | `bindl` (media keys) | `hl.bind("XF86…", … , { locked = true })` |
 
@@ -53,6 +53,18 @@ strings — the old comma-less `rgb(XXXXXX)` hyprlang form is invalid in Lua.
   check — if it doesn't dispatch, drop or remap the `mod + J` bind.
 - Border colors rely on Hyprland accepting `rgba(r,g,b,a)` strings for
   `col.active_border`; verify borders render at runtime.
+
+## Local validation (no running compositor)
+
+`bin/hl-mock.lua` mirrors Hyprland's Lua `hl` API (from
+`share/hypr/stubs/hl.meta.lua`) and loads the generated `hyprland.lua` against
+it. Unknown top-level/`hl.dsp.*` names raise the same `attempt to call a nil
+value` error Hyprland would. Example:
+
+```sh
+nix build .#nixosConfigurations.dotfiles.config.system.build.toplevel --no-link
+lua bin/hl-mock.lua <store-path>/hm_hypr_hyprland.lua
+```
 
 ## Verification / non-bricking rollout
 
