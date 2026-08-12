@@ -48,10 +48,16 @@ strings — the old comma-less `rgb(XXXXXX)` hyprlang form is invalid in Lua.
 ## Autostart
 
 Desktop daemons (waybar, dunst, hyprpaper) are **`systemd.user.services`** in
-`home.nix` — `PartOf`/`WantedBy = graphical-session.target`,
-`After = hyprland-session.target`, `Restart = on-failure` — not inline Lua. The
-`hl.on("hyprland.start", …)` hook only runs one-shot setup commands
-(`hyprctl setcursor`, gnome-keyring).
+`home.nix` — `PartOf`/`WantedBy = hyprland-session.target` (started by
+Hyprland's own activation hook after the Wayland env is set), `Restart =
+on-failure` — not inline Lua. There is no `hl.on("hyprland.start", …)` hook
+anymore: gnome-keyring runs via `services.gnome-keyring` and the cursor theme
+via `home.sessionVariables` (`HYPRCURSOR_*`/`XCURSOR_*`).
+
+⚠ Do not add `After = hyprland-session.target` / `After =
+graphical-session.target` to these services: combined with the WantedBy it
+creates a systemd ordering cycle that deletes every start job (daemons never
+launch).
 
 ## hyprpaper
 

@@ -141,6 +141,13 @@
           animations = {
             enabled = false;
           };
+
+          # No default wallpaper/splash flash while hyprpaper loads: full
+          # black background until the themed wallpaper is live.
+          misc = {
+            background_color = "0x000000";
+            disable_splash_rendering = true;
+          };
         };
 
         # No autostart hook: waybar/dunst/hyprpaper are systemd.user.services,
@@ -221,43 +228,45 @@
   # failure) instead of inline autostart Lua. They start once the graphical
   # session is up (hyprland-session.target guarantees the Wayland env).
   systemd.user.services = {
+    # Scoped to hyprland-session.target (started by Hyprland's own activation
+    # hook AFTER dbus-update-activation-environment sets the Wayland env).
+    # NOTE: do NOT add After=hydration here — After=hyprland-session.target
+    # combined with this WantedBy created a systemd ordering cycle that
+    # deleted every start job (waybar/hyprpaper never launched).
     waybar = {
       Unit = {
         Description = "Waybar status bar";
-        PartOf = [ "graphical-session.target" ];
-        After = [ "hyprland-session.target" ];
+        PartOf = [ "hyprland-session.target" ];
       };
       Service = {
         ExecStart = "${pkgs.waybar}/bin/waybar";
         Restart = "on-failure";
       };
-      Install = { WantedBy = [ "graphical-session.target" ]; };
+      Install = { WantedBy = [ "hyprland-session.target" ]; };
     };
 
     dunst = {
       Unit = {
         Description = "Dunst notification daemon";
-        PartOf = [ "graphical-session.target" ];
-        After = [ "hyprland-session.target" ];
+        PartOf = [ "hyprland-session.target" ];
       };
       Service = {
         ExecStart = "${pkgs.dunst}/bin/dunst";
         Restart = "on-failure";
       };
-      Install = { WantedBy = [ "graphical-session.target" ]; };
+      Install = { WantedBy = [ "hyprland-session.target" ]; };
     };
 
     hyprpaper = {
       Unit = {
         Description = "Hyprland wallpaper daemon";
-        PartOf = [ "graphical-session.target" ];
-        After = [ "hyprland-session.target" ];
+        PartOf = [ "hyprland-session.target" ];
       };
       Service = {
         ExecStart = "${pkgs.hyprpaper}/bin/hyprpaper";
         Restart = "on-failure";
       };
-      Install = { WantedBy = [ "graphical-session.target" ]; };
+      Install = { WantedBy = [ "hyprland-session.target" ]; };
     };
   };
 
