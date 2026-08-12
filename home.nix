@@ -1,4 +1,4 @@
-{ config, pkgs, inputs, lib, ... }:
+{ config, pkgs, inputs, lib, browser, ... }:
 
 {
   imports = [
@@ -165,7 +165,7 @@
           { _args = [ (m "M") (inline "hl.dsp.exit()") ]; }                  # exit
           { _args = [ (m "E") (exec "thunar") ]; }
           { _args = [ (m "V") (inline "hl.dsp.window.float({ action = \"toggle\" })") ]; } # togglefloating
-          { _args = [ (m "P") (inline "hl.dsp.window.pseudo({ action = \"toggle\" })") ]; } # pseudo
+          { _args = [ (m "P") (exec "${lib.getExe browser}") ]; }                   # open the default browser (bnixos.packages.browser)
           # togglesplit: no hl.dsp.window.split on 0.55; best-effort via the
           # dwindle layout message. REVISIT (see docs/hyprland-lua.md).
           { _args = [ (m "J") (inline "hl.dsp.layout(\"togglesplit\")") ]; }

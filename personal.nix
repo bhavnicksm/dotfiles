@@ -63,6 +63,7 @@ in
     # get in — see the openssh block below (PasswordAuthentication=false).
     openssh.authorizedKeys.keys = [
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIqd125sj1Xv1jPykhtZrq2aIAs35qCbO/KCWC3hJJ7F bhavnicksm@gmail.com"
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAID2+cdedFeG1SglKFfGIdDu0kzZ/Vjgo9bZvPiHlEdOn bhavnick-bnixos-tailscale"
     ];
   };
 
@@ -133,7 +134,10 @@ in
         useGlobalPkgs = true;
         useUserPackages = true;
         users.bhavnick = import ./home.nix;
-        extraSpecialArgs = { inherit inputs; };
+        extraSpecialArgs = {
+          inherit inputs;
+          browser = config.bnixos.packages.browser;
+        };
       };
     }
   ];
