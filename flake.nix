@@ -2,10 +2,10 @@
   description = "Personal NixOS consumer of bnixos";
 
   inputs = {
-    # Private repo: fetch over SSH so flakes can authenticate. Points at the
-    # blaunch/v1 branch while the Quickshell launcher lands; drop the
-    # ?ref= once merged to bnixos main.
-    bnixos.url = "git+ssh://git@github.com/bhavnicksm/bnixos.git?ref=blaunch/v1";
+    # Private repo: fetch over SSH so flakes can authenticate. Follows the
+    # default branch (main); feature branches get an explicit ?ref= during
+    # development, dropped once merged.
+    bnixos.url = "git+ssh://git@github.com/bhavnicksm/bnixos.git";
     nixpkgs.follows = "bnixos/nixpkgs";
     nixos-hardware.follows = "bnixos/nixos-hardware";
     home-manager.follows = "bnixos/home-manager";
