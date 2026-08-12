@@ -112,8 +112,8 @@ If the menu ever seems stuck again, check these rules first.
 | `$mod SPACE` | `~/.local/bin/launcher.sh` | `home.nix` `wayland.windowManager.hyprland` bind |
 | `$mod B` | `~/.local/bin/bt-menu.sh` | same |
 
-Waybar's launcher button calls the same `launcher.sh`
-(`config/waybar/config`).
+bbar's launcher button calls the same `launcher.sh`
+(bbar config in bnixos `flakes/bbar`).
 
 ### Testing changes
 

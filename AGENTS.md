@@ -12,7 +12,7 @@ the private `bnixos` product flake over SSH and layers personal config on top:
 - `personal.nix` — machine identity (hostname `bnixos`, TZ, user
   `bhavnick`), SDDM theme, and the **home-manager wiring**
   (`home-manager.users.bhavnick = import ./home.nix`).
-- `home.nix` — user config: shell, hyprland (keybinds, waybar), packages,
+- `home.nix` — user config: shell, hyprland (keybinds), bbar (status bar),
   themes, secrets, and the `home.file` block that installs `bin/` scripts.
 - `config.nix` — static, theme-independent dotfiles under `config/`.
 - `themes/` — palette catalog `palettes.nix`, the `themes.theme` option
@@ -47,12 +47,29 @@ hand-installed copy, not a store symlink), home-manager refuses to manage it and
 the way`. Fix: move the file aside (`mv ~/.local/bin/bt-menu.sh{,.old-bak}`),
 then re-run the generation's `activate` (or `nixos-rebuild switch`).
 
+## Which packages live where (bnixos core vs dotfiles)
+
+The **default desktop ships with bnixos**, not here: `bnixos.packages.core`
+(bnixos `packages.nix`) installs the whole stack — shell + Hyprland stack
+(fuzzel, dunst, hyprpaper, hyprlock, hypridle, hyprpicker, grim, slurp,
+cliphist, wl-clipboard, btop, bluez), secrets (libsecret, gnome-keyring,
+age, sops), the JetBrains Mono font, and the browser via
+`bnixos.packages.browser`.
+
+- `home.nix` `home.packages` holds only **personal extras not in core**
+  (spotify, code-cursor-fhs, pywal).
+- The browser is bnixos's default (Chromium) via `bnixos.packages.core` —
+  no firefox. Override it only by setting `bnixos.packages.browser` in
+  `personal.nix`.
+- To change what ships by default, edit bnixos `packages.nix`, NOT
+  `home.nix`. To add a machine-only package, add it to `home.packages`.
+
 ## Theme model
 
 - One line in `home.nix`: `themes.theme = "white";` — an enum over the keys of
   `themes/palettes.nix` (themselves Omarchy-style semantic palettes).
 - `themes/theme-module.nix` renders every consumer (hyprland borders, ghostty,
-  waybar css, wofi css, btop) from the selected palette via `templates/*.tpl`.
+  bbar palette, wofi css, btop) from the selected palette via `templates/*.tpl`.
 - `bin/theme-selector.sh` switches it: edits that line, then rebuilds.
 - See `docs/theming.md`.
 

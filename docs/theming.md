@@ -60,7 +60,7 @@ line and rebuilds via `bin/theme-selector.sh`.
 
 | App | Source | Palette keys used |
 |-----|--------|-------------------|
-| Waybar | `config/waybar/config` (static) + `waybar/style.css` (tpl) | `background`, `foreground`, `accent`, `muted`, `selection`, `red`, `yellow`, `green` |
+| Waybar → **bbar** | bnixos `flakes/bbar` (Quickshell bar) via `bbar.palette` | `background`, `foreground`, `accent`, `muted`, `selection`, `red`, `yellow`, `green` |
 | Hyprland | `home-manager` `wayland.windowManager.hyprland` | `foreground` → active border, `muted` → inactive border |
 | Ghostty | `programs.ghostty.themes.<name>` | `background`, `foreground`, `cursor`, `selection`, 16-color ANSI palette |
 | btop | `~/.config/btop/themes/<name>.theme` + `btop/btop.conf` (tpl) | all semantic colors |
@@ -83,15 +83,16 @@ Because the palette keys are shared, one new palette themes every app at once.
 The `themes/templates/` files are the only hand-written CSS/config in the
 pipeline:
 
-- `waybar-style.css.tpl` — bar layout + module styling. Keep colors expressed
-  as `{{ ... }}` placeholders so themes keep working.
 - `wofi-style.css.tpl` — launcher styling.
 - `btop.theme.tpl` — btop theme file.
 - `btop.conf.tpl` — btop options; only `color_theme` is templated.
 
+The status bar is **not** themed here: it's bnixos's `bbar`, a Quickshell bar
+whose `bbar.palette` we fill from the active palette (one line per color in
+`theme-module.nix`). Edit the bar engine in bnixos, not here.
+
 Static, theme-independent config stays under `config/` and is wired through
-`config.nix` (currently `gtk-3.0`, `hypr`, `pavucontrol.ini`, `starship.toml`,
-plus the Waybar layout file itself).
+`config.nix` (currently `gtk-3.0`, `pavucontrol.ini`, `starship.toml`).
 
 ## Relationship to nix-colors
 

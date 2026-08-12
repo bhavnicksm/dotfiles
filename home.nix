@@ -4,6 +4,7 @@
   imports = [
     inputs.sops-nix.homeManagerModules.sops
     ./themes/theme-module.nix
+    inputs.bnixos.homeModules.bbar
   ];
 
   home.username = "bhavnick";
@@ -150,7 +151,7 @@
           };
         };
 
-        # No autostart hook: waybar/dunst/hyprpaper are systemd.user.services,
+        # No autostart hook: bbar/dunst/hyprpaper are systemd.user.services,
         # gnome-keyring via services.gnome-keyring, and the cursor theme via
         # home.sessionVariables (HYPRCURSOR_*/XCURSOR_*). The module's systemd
         # activation hook is generated automatically.
@@ -232,19 +233,7 @@
     # hook AFTER dbus-update-activation-environment sets the Wayland env).
     # NOTE: do NOT add After=hydration here — After=hyprland-session.target
     # combined with this WantedBy created a systemd ordering cycle that
-    # deleted every start job (waybar/hyprpaper never launched).
-    waybar = {
-      Unit = {
-        Description = "Waybar status bar";
-        PartOf = [ "hyprland-session.target" ];
-      };
-      Service = {
-        ExecStart = "${pkgs.waybar}/bin/waybar";
-        Restart = "on-failure";
-      };
-      Install = { WantedBy = [ "hyprland-session.target" ]; };
-    };
-
+    # deleted every start job (bbar/hyprpaper never launched).
     dunst = {
       Unit = {
         Description = "Dunst notification daemon";
@@ -270,47 +259,24 @@
     };
   };
 
+  # The status bar is bbar (bnixos flakes/bbar) — a Quickshell desktop bar.
+  # Waybar is deliberately gone: the bar is owned by bnixos so there is one
+  # place to edit it. The palette is wired from the active theme in
+  # themes/theme-module.nix; bbar runs via its own systemd.user.services.bbar.
+  bbar.enable = true;
+
   # The home.packages option allows you to install Nix packages into your
-  # environment.
+  # environment. The full default desktop (shell, Hyprland stack, secrets,
+  # font, browser) ships via bnixos.packages.core — see bnixos/packages.nix.
+  # Keep here only packages that are personal to this machine and not part of
+  # the bnixos core set (unfree/individual apps, extra pywal tooling).
   home.packages = with pkgs; [
-    
-    # Basic Hyprland utils
-    ghostty
-    zsh
-    starship
-    opencode
-    fuzzel
-    waybar
-    dunst
-    hyprpaper
-    hyprlock
-    hypridle
-    
-    # Support Utils
-    pywal # dynamic waybar colors
-    hyprpicker # color picker
-    grim
-    slurp
-    cliphist
-    wl-clipboard
+    # Utility for dynamic theme colors, driven by the active theme.
+    pywal
 
-    # Utils for secrets
-    libsecret
-    gnome-keyring
-    age
-    sops
-
-    # Additional CLI utils
-    btop
-    bluez
-
-# Desktop applications 
-    firefox
+    # Desktop applications (unfree / personal)
     spotify
     code-cursor-fhs
-
-    # Miscellaneous pkgs (fonts etc.)
-    nerd-fonts.jetbrains-mono
   ];
   
   # Setting the font

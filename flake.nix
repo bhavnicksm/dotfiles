@@ -2,8 +2,10 @@
   description = "Personal NixOS consumer of bnixos";
 
   inputs = {
-    # Private repo: fetch over SSH so flakes can authenticate
-    bnixos.url = "git+ssh://git@github.com/bhavnicksm/bnixos.git";
+    # Private repo: fetch over SSH so flakes can authenticate. Points at the
+    # bbar/quickshell branch while the Quickshell bar replaces waybar; drop
+    # the ?ref= once merged to bnixos main.
+    bnixos.url = "git+ssh://git@github.com/bhavnicksm/bnixos.git?ref=bbar/quickshell";
     nixpkgs.follows = "bnixos/nixpkgs";
     nixos-hardware.follows = "bnixos/nixos-hardware";
     home-manager.follows = "bnixos/home-manager";

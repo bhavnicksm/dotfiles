@@ -50,7 +50,6 @@ let
 
   btopTheme = renderTemplate (render ./templates/btop.theme.tpl) palette;
   btopConf = renderTemplate (render ./templates/btop.conf.tpl) { color_theme = themeName; };
-  waybarStyle = renderTemplate (render ./templates/waybar-style.css.tpl) palette;
   wofiStyle = renderTemplate (render ./templates/wofi-style.css.tpl) palette;
 
   # Theme wallpaper: palettes carry a `wallpaper` key naming a file in
@@ -212,14 +211,20 @@ in
   };
 
   config = {
-    # Waybar
-    xdg.configFile."waybar/config".source = ../config/waybar/config;
-    xdg.configFile."waybar/config".force = true;
-    xdg.configFile."waybar/style.css".text = waybarStyle;
-    xdg.configFile."waybar/style.css".force = true;
-    xdg.configFile."waybar/scripts".source = ../config/waybar/scripts;
-    xdg.configFile."waybar/scripts".recursive = true;
-    xdg.configFile."waybar/scripts".force = true;
+    # bbar (bnixos flakes/bbar) — the Quickshell status bar. Its 7-color
+    # palette comes from the active Omarchy palette (a strict subset of the
+    # full palette's keys), so the bar follows themes.theme like everything
+    # else.
+    bbar.palette = {
+      background = palette.background;
+      foreground = palette.foreground;
+      accent = palette.accent;
+      muted = palette.muted;
+      selection = palette.selection;
+      red = palette.red;
+      yellow = palette.yellow;
+      green = palette.green;
+    };
 
     # wofi
     xdg.configFile."wofi/style.css".text = wofiStyle;
