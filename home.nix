@@ -149,11 +149,11 @@
             "hyprland.start"
             (inline ''
               function()
-                hl.exec_cmd("waybar")
-                hl.exec_cmd("dunst")
-                hl.exec_cmd("hyprpaper")
+                -- Waybar/dunst/hyprpaper run as systemd.user.services
+                -- (After=hyprland-session.target); gnome-keyring is started
+                -- by services.gnome-keyring. This hook only does one-shot
+                -- setup commands.
                 hl.exec_cmd("hyprctl setcursor Bibata-Modern-Classic 16")
-                hl.exec_cmd("gnome-keyring-daemon --start --components=secrets")
               end
             '')
           ];
@@ -227,7 +227,51 @@
         ];
       };
   };
-  
+
+  # Desktop daemons run as declarative user services (modular, restarted on
+  # failure) instead of inline autostart Lua. They start once the graphical
+  # session is up (hyprland-session.target guarantees the Wayland env).
+  systemd.user.services = {
+    waybar = {
+      Unit = {
+        Description = "Waybar status bar";
+        PartOf = [ "graphical-session.target" ];
+        After = [ "hyprland-session.target" ];
+      };
+      Service = {
+        ExecStart = "${pkgs.waybar}/bin/waybar";
+        Restart = "on-failure";
+      };
+      Install = { WantedBy = [ "graphical-session.target" ]; };
+    };
+
+    dunst = {
+      Unit = {
+        Description = "Dunst notification daemon";
+        PartOf = [ "graphical-session.target" ];
+        After = [ "hyprland-session.target" ];
+      };
+      Service = {
+        ExecStart = "${pkgs.dunst}/bin/dunst";
+        Restart = "on-failure";
+      };
+      Install = { WantedBy = [ "graphical-session.target" ]; };
+    };
+
+    hyprpaper = {
+      Unit = {
+        Description = "Hyprland wallpaper daemon";
+        PartOf = [ "graphical-session.target" ];
+        After = [ "hyprland-session.target" ];
+      };
+      Service = {
+        ExecStart = "${pkgs.hyprpaper}/bin/hyprpaper";
+        Restart = "on-failure";
+      };
+      Install = { WantedBy = [ "graphical-session.target" ]; };
+    };
+  };
+
   # The home.packages option allows you to install Nix packages into your
   # environment.
   home.packages = with pkgs; [

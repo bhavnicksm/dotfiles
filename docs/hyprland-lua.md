@@ -45,6 +45,29 @@ Color arguments (e.g. `general.col.active_border`) are Lua **`"rgba(r,g,b,a)"`**
 strings — the old comma-less `rgb(XXXXXX)` hyprlang form is invalid in Lua.
 `themes/theme-module.nix` uses `hexToRgba` for these.
 
+## Autostart
+
+Desktop daemons (waybar, dunst, hyprpaper) are **`systemd.user.services`** in
+`home.nix` — `PartOf`/`WantedBy = graphical-session.target`,
+`After = hyprland-session.target`, `Restart = on-failure` — not inline Lua. The
+`hl.on("hyprland.start", …)` hook only runs one-shot setup commands
+(`hyprctl setcursor`, gnome-keyring).
+
+## hyprpaper
+
+hyprpaper **>= 0.8** (hyprtoolkit rewrite) broke the config format: `preload`
+no longer exists and `wallpaper = monitor,path` one-liners are gone. Wallpapers
+are anonymous blocks, config in `themes/templates/hyprpaper.conf.tpl`:
+
+```ini
+wallpaper {
+    monitor =        # empty = fallback for all monitors
+    path = <store path>
+    fit_mode = cover
+}
+splash = false
+```
+
 ## Caveats / things to REVISIT
 
 - **togglesplit**: Hyprland's Lua `hl.dsp.window` has no `split`/`togglesplit`
