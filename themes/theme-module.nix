@@ -57,11 +57,9 @@ let
   # wallpapers/.
   wallpaperPath = "${../wallpapers}/${palette.wallpaper}";
 
-  hyprpaperConf = ''
-    preload = ${wallpaperPath}
-    wallpaper = ,${wallpaperPath}
-    splash = false
-  '';
+  # hyprpaper config lives in themes/templates/hyprpaper.conf.tpl (hyprpaper
+  # >= 0.8 block format); only the themed wallpaper path is injected here.
+  hyprpaperConf = renderTemplate (render ./templates/hyprpaper.conf.tpl) { wallpaper = wallpaperPath; };
 
   hyprlockConf = renderTemplate (render ./templates/hyprlock.conf.tpl) ({
     # Omarchy lock surface: theme background at 80% alpha, accent border,
