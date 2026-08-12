@@ -70,6 +70,15 @@ in
   # Allow only clearly-flagged unfree packages we intentionally use.
   nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [ "spotify" "cursor" ];
 
+  # Keep `opencode` on the latest (nixpkgs-unstable) instead of the 26.05
+  # branch's broken 1.15.10 (its DB migration fails against our 1.18.x data
+  # dir). Everything else stays pinned to the 26.05 branch.
+  nixpkgs.overlays = [
+    (final: prev: {
+      opencode = inputs.nixpkgs-unstable.legacyPackages.${pkgs.stdenv.hostPlatform.system}.opencode;
+    })
+  ];
+
   # Greeter + plymouth render JetBrains Mono (user-level HM fonts are not
   # visible to processes running as root/sddm).
   fonts.packages = [ pkgs.nerd-fonts.jetbrains-mono ];

@@ -13,6 +13,11 @@
       url = "github:Mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    # opencode latest, for an overlay pin: the nixos-26.05 branch froze
+    # opencode at 1.15.10 whose DB migration errors against the 1.18.x data
+    # dir. Keep `opencode` on nixpkgs-unstable (1.18.13) via personal.nix.
+    nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
   };
 
   outputs = { self, bnixos, nixpkgs, nixos-hardware, home-manager, sops-nix, ... }@inputs: {
