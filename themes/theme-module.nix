@@ -21,9 +21,6 @@ let
       template
       (builtins.attrNames attrs);
 
-  # Hex "#rrggbb" -> hyprland "rgb(XXXXXX)" (no commas, 6 hex digits).
-  hyprColor = hex: "rgb(${lib.removePrefix "#" hex})";
-
   # Hex "#rrggbb" -> hyprland "rgba(r, g, b, a)" with alpha 0-1.
   hexToRgba = hex: alpha:
     let
@@ -260,9 +257,11 @@ in
     programs.ghostty.themes.${themeName} = ghosttyTheme;
     programs.ghostty.settings.theme = themeName;
 
-    # Hyprland borders follow the palette (foreground = active, muted = inactive)
-    wayland.windowManager.hyprland.settings.general."col.active_border" = hyprColor palette.foreground;
-    wayland.windowManager.hyprland.settings.general."col.inactive_border" = hyprColor palette.muted;
+    # Hyprland borders follow the palette (foreground = active, muted = inactive).
+    # Lua config reads colors as "rgba(r,g,b,a)" strings (hyprlang's comma-less
+    # "rgb(XXXXXX)" is not valid in ~/.config/hypr/hyprland.lua).
+    wayland.windowManager.hyprland.settings.config.general."col.active_border" = hexToRgba palette.foreground 1.0;
+    wayland.windowManager.hyprland.settings.config.general."col.inactive_border" = hexToRgba palette.muted 1.0;
 
     # GTK
     gtk.theme = {

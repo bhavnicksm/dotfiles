@@ -91,6 +91,18 @@ home.file.".local/bin/bt-device.sh".executable = true;
   `bluetoothctl` is on PATH. `rfkill` works as the user — `/dev/rfkill` has
   a uaccess ACL.
 
+## Hyprland config (Lua)
+
+- `wayland.windowManager.hyprland.configType = "lua"` (26.05 default) writes
+  `~/.config/hypr/hyprland.lua`, not `hyprland.conf`. The `settings` block in
+  `home.nix` uses the 26.05 Lua generator (`_var`, `_args`, `mkLuaInline`).
+  See `docs/hyprland-lua.md` for the full mapping and the DSL reference.
+- **REVISIT:** the `togglesplit` bind (`$mod + J`) maps to
+  `hl.dsp.layout("togglesplit")` best-effort; Hyprland 0.55 has no
+  `window.split` dispatcher. Verify it dispatches; if not, drop/remap it.
+- Starting point for this migration was the `pre-lua-migration` branch
+  (last known-good hyprlang config at `576eaa9`).
+
 ## Keybindings (home.nix hyprland bind)
 
 - `$mod SPACE` → `~/.local/bin/launcher.sh`

@@ -95,110 +95,137 @@
     size = 16;
   };
 
-  # Add Hyprland configuration to the home
+  # Add Hyprland configuration to the home.
+  # stateVersion 26.05 defaults `configType` to "lua" (Hyprland >= 0.55
+  # deprecated hyprlang in favour of `~/.config/hypr/hyprland.lua`). The
+  # `settings` below use the 26.05 Lua generator: each attr becomes an
+  # `hl.<name>(…)` call; `_var` makes a Lua local; `_args` are the args
+  # (mkLuaInline = raw Lua). See docs/hyprland-lua.md.
   wayland.windowManager.hyprland = {
     enable = true;
-    # stateVersion 26.05 defaults HM to lua config; our settings + theme
-    # module are hyprlang-shaped, so pin hyprlang (migrate to lua later).
-    configType = "hyprlang";
-    settings = {
-      # Basic Settings
-      "$mod" = "SUPER";
+    configType = "lua";
+    settings =
+      let
+        inline = lib.generators.mkLuaInline;
+        # key strings reuse the `mod` local (SUPER) defined below.
+        m  = key: inline "mod .. \" + ${key}\"";
+        ms = key: inline "mod .. \" + SHIFT + ${key}\"";
+        exec  = cmd: inline ''hl.dsp.exec_cmd("${cmd}")'';
+        focus = dir: inline ''hl.dsp.focus({ direction = "${dir}" })'';
+        swap  = dir: inline ''hl.dsp.window.swap({ direction = "${dir}" })'';
+        ws    = w: inline ''hl.focus.workspace("${w}")'';
+        movews = w: inline ''hl.dsp.window.move({ workspace = "${w}", follow = true })'';
+      in
+      {
+        # Basic Settings: `local mod = "SUPER"` (was `$mod`)
+        mod._var = "SUPER";
 
-      # General settings
-      general = {
-        gaps_in = 3;      # Gap between windows (default is 5)
-        gaps_out = 6;     # Gap between windows and screen edge (default is 20)
-        border_size = 2;  # Window border thickness (default is 1)
-        # "col.active_border" / "col.inactive_border" come from the active
-        # theme via themes/theme-module.nix.
+        # Plain config options (general/decoration/animations) go through a
+        # single `hl.config({ … })` call — there is no hl.general/hl.decoration/
+        # hl.animations function in Hyprland's Lua API.
+        config = {
+          general = {
+            gaps_in = 3;      # Gap between windows (default is 5)
+            gaps_out = 6;     # Gap between windows and screen edge (default is 20)
+            border_size = 2;  # Window border thickness (default is 1)
+            # "col.active_border" / "col.inactive_border" come from the active
+            # theme via themes/theme-module.nix (Lua "rgba(r,g,b,a)" format).
+          };
+
+          # Subtle rounded window corners
+          decoration = {
+            rounding = 6;
+          };
+
+          # Setting the animations to false for now
+          animations = {
+            enabled = false;
+          };
+        };
+
+        # Autostart (was exec-once) -> hl.on("hyprland.start", …)
+        on = {
+          _args = [
+            "hyprland.start"
+            (inline ''
+              function()
+                hl.exec_cmd("waybar")
+                hl.exec_cmd("dunst")
+                hl.exec_cmd("hyprpaper")
+                hl.exec_cmd("hyprctl setcursor Bibata-Modern-Classic 16")
+                hl.exec_cmd("gnome-keyring-daemon --start --components=secrets")
+              end
+            '')
+          ];
+        };
+
+        # Keybindings for Hyprland
+        bind = [
+          { _args = [ (m "RETURN") (exec "ghostty") ]; }
+          { _args = [ (m "SPACE") (exec "~/.local/bin/launcher.sh") ]; }
+          { _args = [ (m "B") (exec "~/.local/bin/bt-menu.sh") ]; }
+          { _args = [ (m "W") (inline "hl.dsp.window.close()") ]; }          # killactive
+          { _args = [ (m "M") (inline "hl.dsp.exit()") ]; }                  # exit
+          { _args = [ (m "E") (exec "thunar") ]; }
+          { _args = [ (m "V") (inline "hl.dsp.window.float({ action = \"toggle\" })") ]; } # togglefloating
+          { _args = [ (m "P") (inline "hl.dsp.window.pseudo({ action = \"toggle\" })") ]; } # pseudo
+          # togglesplit: no hl.dsp.window.split on 0.55; best-effort via the
+          # dwindle layout message. REVISIT (see docs/hyprland-lua.md).
+          { _args = [ (m "J") (inline "hl.dsp.layout(\"togglesplit\")") ]; }
+          { _args = [ (m "L") (exec "hyprlock") ]; }
+
+          # Move focus
+          { _args = [ (m "left") (focus "l") ]; }
+          { _args = [ (m "right") (focus "r") ]; }
+          { _args = [ (m "up") (focus "u") ]; }
+          { _args = [ (m "down") (focus "d") ]; }
+
+          # Swap the focused window with its neighbor within the workspace
+          { _args = [ (ms "left") (swap "l") ]; }
+          { _args = [ (ms "right") (swap "r") ]; }
+          { _args = [ (ms "up") (swap "u") ]; }
+          { _args = [ (ms "down") (swap "d") ]; }
+
+          # Switch Workspaces
+          { _args = [ (m "1") (ws "1") ]; }
+          { _args = [ (m "2") (ws "2") ]; }
+          { _args = [ (m "3") (ws "3") ]; }
+          { _args = [ (m "4") (ws "4") ]; }
+          { _args = [ (m "5") (ws "5") ]; }
+          { _args = [ (m "6") (ws "6") ]; }
+          { _args = [ (m "7") (ws "7") ]; }
+          { _args = [ (m "8") (ws "8") ]; }
+          { _args = [ (m "9") (ws "9") ]; }
+
+          # Shift window to workspace
+          { _args = [ (ms "1") (movews "1") ]; }
+          { _args = [ (ms "2") (movews "2") ]; }
+          { _args = [ (ms "3") (movews "3") ]; }
+          { _args = [ (ms "4") (movews "4") ]; }
+          { _args = [ (ms "5") (movews "5") ]; }
+          { _args = [ (ms "6") (movews "6") ]; }
+          { _args = [ (ms "7") (movews "7") ]; }
+          { _args = [ (ms "8") (movews "8") ]; }
+          { _args = [ (ms "9") (movews "9") ]; }
+
+          # Scroll through the workspaces
+          { _args = [ (m "mouse_down") (ws "e+1") ]; }
+          { _args = [ (m "mouse_up") (ws "e-1") ]; }
+
+          # Screenshots ($( … ) expands via the exec_cmd shell)
+          { _args = [ "Print" (inline ''hl.dsp.exec_cmd("grim ~/Pictures/screenshot-$(date +%Y%m%d-%H%M%S).png")'') ]; }
+          { _args = [ (m "Print") (inline ''hl.dsp.exec_cmd("grim -g \"$(slurp)\" ~/Pictures/screenshot-$(date +%Y%m%d-%H%M%S).png")'') ]; }
+          { _args = [ "SHIFT + Print" (inline ''hl.dsp.exec_cmd("grim -g \"$(slurp)\" - | wl-copy")'') ]; }
+
+          # Media keys (was bindl = locked-screen binds)
+          { _args = [ "XF86AudioRaiseVolume" (exec "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+") { locked = true; } ]; }
+          { _args = [ "XF86AudioLowerVolume" (exec "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-") { locked = true; } ]; }
+          { _args = [ "XF86AudioMute" (exec "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle") { locked = true; } ]; }
+          { _args = [ "XF86AudioMicMute" (exec "wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle") { locked = true; } ]; }
+          { _args = [ "XF86MonBrightnessUp" (exec "brightnessctl set 5%+") { locked = true; } ]; }
+          { _args = [ "XF86MonBrightnessDown" (exec "brightnessctl set 5%-") { locked = true; } ]; }
+        ];
       };
-
-      # Subtle rounded window corners
-      decoration = {
-        rounding = 6;
-      };
-
-      # Setting the animations to false for now
-      animations = {
-        enabled = false;
-      };
-
-      # Setting the cursor theme
-      exec-once = [
-        "waybar"
-	"dunst"
-	"hyprpaper"
-        "hyprctl setcursor Bibata-Modern-Classic 16"
-	"gnome-keyring-daemon --start --components=secrets"
-      ];
-
-      # Keybindings for Hyprland
-      bind = [
-        "$mod, Return, exec, ghostty"
-        "$mod, SPACE, exec, ~/.local/bin/launcher.sh"
-	"$mod, B, exec, ~/.local/bin/bt-menu.sh"
-	"$mod, W, killactive,"
-	"$mod, M, exit,"
-	"$mod, E, exec, thunar"
-	"$mod, V, togglefloating,"
-	"$mod, P, pseudo,"
- 	"$mod, J, togglesplit,"
-	"$mod, L, exec, hyprlock"
-	# Move focus
-	"$mod, left, movefocus, l"
-	"$mod, right, movefocus, r"
-	"$mod, up, movefocus, u"
-	"$mod, down, movefocus, d"
-
-	# Swap the focused window with its neighbor within the workspace
-	"$mod SHIFT, left, swapwindow, l"
-	"$mod SHIFT, right, swapwindow, r"
-	"$mod SHIFT, up, swapwindow, u"
-	"$mod SHIFT, down, swapwindow, d"
-
-	# Switch Workspaces
-	"$mod, 1, workspace, 1"
-	"$mod, 2, workspace, 2"
-	"$mod, 3, workspace, 3"
-	"$mod, 4, workspace, 4"
-	"$mod, 5, workspace, 5"
-	"$mod, 6, workspace, 6"
-	"$mod, 7, workspace, 7"
-	"$mod, 8, workspace, 8"
-	"$mod, 9, workspace, 9"
-
-	# Shift window to workspace
-	"$mod SHIFT, 1, movetoworkspace, 1"
-	"$mod SHIFT, 2, movetoworkspace, 2"
-	"$mod SHIFT, 3, movetoworkspace, 3"
-	"$mod SHIFT, 4, movetoworkspace, 4"
-	"$mod SHIFT, 5, movetoworkspace, 5"
-	"$mod SHIFT, 6, movetoworkspace, 6"
-	"$mod SHIFT, 7, movetoworkspace, 7"
-	"$mod SHIFT, 8, movetoworkspace, 8"
-	"$mod SHIFT, 9, movetoworkspace, 9"
-
-	# Scroll through the workspaces
-	"$mod, mouse_down, workspace, e+1"
-	"$mod, mouse_up, workspace, e-1"
-
-	# Screenshots
-        ", Print, exec, grim ~/Pictures/screenshot-$(date +%Y%m%d-%H%M%S).png"  # Full screenshot
-        "$mod, Print, exec, grim -g \"$(slurp)\" ~/Pictures/screenshot-$(date +%Y%m%d-%H%M%S).png"  # Area screenshot
-        "SHIFT, Print, exec, grim -g \"$(slurp)\" - | wl-copy"  # Screenshot to clipboard
-      ];
-
-      # Media keys bindings
-      bindl = [
-        ", XF86AudioRaiseVolume, exec, wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+"
-        ", XF86AudioLowerVolume, exec, wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"
-        ", XF86AudioMute, exec, wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"
-        ", XF86AudioMicMute, exec, wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"
-        ", XF86MonBrightnessUp, exec, brightnessctl set 5%+"
-        ", XF86MonBrightnessDown, exec, brightnessctl set 5%-"
-      ];
-    };
   };
   
   # The home.packages option allows you to install Nix packages into your
