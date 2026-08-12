@@ -62,28 +62,32 @@ All scripts live in `bin/` and are installed to `~/.local/bin` via `home.nix`.
 
 ```
 bin/
-├── bt-menu.sh        # thin fuzzel/wofi menu, dispatches to the below
+├── bt-menu.sh        # thin bl-select menu, dispatches to the below
 ├── bt-power.sh       # bt-power.sh on|off|toggle|is-on   (omarchy-bluetooth-power)
 ├── bt-device.sh      # bt-device.sh pair|connect|disconnect|forget <mac>
-├── bt-scan.sh        # scan for new devices; prints "name\tmac" per unpaired device
-├── launcher.sh       # Super+Space: Apps / Themes two-level menu
-└── theme-selector.sh # pick a theme from themes/palettes.nix, then rebuild
+└── bt-scan.sh        # scan for new devices; prints "name\tmac" per unpaired device
 ```
+
+`launcher.sh` and `theme-selector.sh` are gone. The app menu is now **blaunch**
+(bnixos `flakes/blaunch`, a Quickshell panel) and the theme selector was
+retired — switching themes is declarative (edit `themes.theme` in `home.nix`,
+`nixos-rebuild switch`).
 
 Rules:
 
 - **Single-purpose commands**: `bt-power.sh`, `bt-device.sh`, `bt-scan.sh`
   do one thing, take explicit args, validate them, and answer with exit codes.
   They never show a menu and never notify.
-- **Menus are thin**: `bt-menu.sh` owns fuzzel/wofi and `notify-send`; it
+- **Menus are thin**: `bt-menu.sh` owns `bl-select` and `notify-send`; it
   resolves sibling commands via `SCRIPT_DIR=$(dirname "$0")` — the invocation
   directory, where home-manager puts every script (as symlinks), so siblings
   resolve there. **Never `readlink -f "$0"` for this**: home-manager installs
   each script as its own `/nix/store/...-hm_<name>` wrapper, and the fully
   resolved path's dir is `/nix/store`, which has no sibling scripts.
 - **Strict mode**: `set -u` (and `set -euo pipefail` in the single-purpose
-  commands) — the menu uses `set -u` only, because a cancelled `fuzzel` prompt
-  (empty selection / non-zero exit) is a normal menu outcome, not a fatal error.
+  commands) — the menu uses `set -u` only, because a cancelled `bl-select`
+  prompt (empty selection / non-zero exit) is a normal menu outcome, not a
+  fatal error.
 - **Shebang**: `#!/usr/bin/env bash`, a deliberate deviation from Omarchy's
   `#!/bin/bash`, so the scripts reach the right bash in PATH on NixOS.
 - **Timeouts everywhere**: every `bluetoothctl` call runs under `timeout`.
@@ -105,15 +109,29 @@ relaunch.
 
 If the menu ever seems stuck again, check these rules first.
 
+## The menu tool (bl-select)
+
+Everything that used `fuzzel --dmenu` / `wofi --dmenu` now goes through
+`bl-select`, the dmenu mode of the **blaunch** Quickshell launcher (bnixos
+`flakes/blaunch`). Contract, matching fuzzel for the scripts:
+
+- `bl-select <prompt> [option...]` — options also read from stdin when none
+  are given.
+- Exit 0 and prints the chosen line; exit 1 on dismissal (Escape / click
+  outside) — the "cancelled prompt is normal" outcome.
+- Returns the raw option line including any `<TAB>` separators the caller
+  parses itself.
+
+`bl-launch` toggles the app search (`$mod SPACE`). Both talk to the running
+blaunch instance over Quickshell's `qs ipc` (via the shared `b-ipc` client
+from the `bipc` flake).
+
 ### Keybindings
 
 | Key | Action | Source |
 |---|---|---|
-| `$mod SPACE` | `~/.local/bin/launcher.sh` | `home.nix` `wayland.windowManager.hyprland` bind |
+| `$mod SPACE` | `~/.local/bin/bl-launch` | `home.nix` `wayland.windowManager.hyprland` bind |
 | `$mod B` | `~/.local/bin/bt-menu.sh` | same |
-
-bbar's launcher button calls the same `launcher.sh`
-(bbar config in bnixos `flakes/bbar`).
 
 ### Testing changes
 

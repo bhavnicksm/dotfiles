@@ -51,10 +51,11 @@ then re-run the generation's `activate` (or `nixos-rebuild switch`).
 
 The **default desktop ships with bnixos**, not here: `bnixos.packages.core`
 (bnixos `packages.nix`) installs the whole stack — shell + Hyprland stack
-(fuzzel, dunst, hyprpaper, hyprlock, hypridle, hyprpicker, grim, slurp,
+(dunst, hyprpaper, hyprlock, hypridle, hyprpicker, grim, slurp,
 cliphist, wl-clipboard, btop, bluez), secrets (libsecret, gnome-keyring,
 age, sops), the JetBrains Mono font, and the browser via
-`bnixos.packages.browser`.
+`bnixos.packages.browser`. There is no fuzzel/wofi — app search and dmenu
+prompts come from the **blaunch** Quickshell launcher (`inputs.bnixos.homeModules.blaunch`).
 
 - `home.nix` `home.packages` holds only **personal extras not in core**
   (spotify, code-cursor-fhs, pywal).
@@ -69,8 +70,9 @@ age, sops), the JetBrains Mono font, and the browser via
 - One line in `home.nix`: `themes.theme = "white";` — an enum over the keys of
   `themes/palettes.nix` (themselves Omarchy-style semantic palettes).
 - `themes/theme-module.nix` renders every consumer (hyprland borders, ghostty,
-  bbar palette, wofi css, btop) from the selected palette via `templates/*.tpl`.
-- `bin/theme-selector.sh` switches it: edits that line, then rebuilds.
+  bbar palette, btop) from the selected palette via `templates/*.tpl`.
+- Switching themes is declarative: edit the `themes.theme = "…";` line in
+  `home.nix` and rebuild (the old `bin/theme-selector.sh` is retired).
 - See `docs/theming.md`.
 
 ## Neovim
@@ -91,14 +93,14 @@ home.file.".local/bin/bt-device.sh".executable = true;
 
 - **Single-purpose commands** (`bt-power.sh`, `bt-device.sh`, `bt-scan.sh`):
   explicit args, hard validation (MAC regex), answer with exit codes, no UI.
-- **Thin menus** (`bt-menu.sh`, `launcher.sh`): own fuzzel/wofi + notify-send,
-  dispatch to the single-purpose commands; resolve siblings via `SCRIPT_DIR`,
-  never PATH assumptions.
+- **Thin menus** (`bt-menu.sh`): own `bl-select` (blaunch's dmenu mode) +
+  notify-send, dispatch to the single-purpose commands; resolve siblings via
+  `SCRIPT_DIR`, never PATH assumptions.
 - **Exit-code menu contract**: a dismissed top-level menu must end the script
   (`while main_menu; do :; done`, `main_menu` returns non-zero on dismiss —
   the old `while :; do main_menu; done` locked the menu open). Submenus return 0
   on dismissal to pop back up.
-- Strict mode (`set -euo pipefail`; menus use `set -u` so a cancelled fuzzel
+- Strict mode (`set -euo pipefail`; menus use `set -u` so a cancelled `bl-select`
   prompt is not fatal). Shebang `#!/usr/bin/env bash` (deviation from Omarchy's
   `#!/bin/bash` for NixOS PATH portability) — see `docs/launchers-and-scripts.md`.
 - Every `bluetoothctl` call wrapped in `timeout`. Bluetooth power is
@@ -122,9 +124,8 @@ home.file.".local/bin/bt-device.sh".executable = true;
 
 ## Keybindings (home.nix hyprland bind)
 
-- `$mod SPACE` → `~/.local/bin/launcher.sh`
+- `$mod SPACE` → `~/.local/bin/bl-launch` (toggles the blaunch app menu)
 - `$mod B` → `~/.local/bin/bt-menu.sh`
-- Waybar launcher button → same `launcher.sh`
 
 ## Verification
 

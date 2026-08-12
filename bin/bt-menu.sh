@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 
-# Bluetooth menu — thin fuzzel/wofi front end over the single-purpose bt-*
-# commands (bt-power, bt-device, bt-scan), modeled after Omarchy's menu style.
+# Bluetooth menu — thin bl-select front end over the single-purpose bt-*
+# commands (bt-power, bt-device, bt-scan), modeled after Omarchy's menu
+# style. bl-select is blaunch's dmenu mode (the fuzzel/wofi --dmenu
+# replacement), which the launcher migration put in place.
 #
 # Exit-code contract (see docs/launchers-and-scripts.md):
 #   - a dismissed top-level menu (Escape) ends this script
@@ -12,21 +14,13 @@ set -u
 
 SCRIPT_DIR=$(cd -- "$(dirname -- "$0")" && pwd)
 
-MENU_BIN=${BT_MENU_BIN:-$(command -v fuzzel || command -v wofi || true)}
 NOTIFY_BIN=${BT_MENU_NOTIFY:-notify-send}
-
-[[ -n $MENU_BIN ]] || {
-  notify-send -a bt-menu "Bluetooth" "No fuzzel/wofi found — install one" 2>/dev/null || true
-  exit 1
-}
 
 ask() {
   local prompt=$1
   shift
   [[ $# -gt 0 ]] || return 1
-  "$MENU_BIN" --dmenu --prompt="$prompt " <<< "$(
-    printf '%s\n' "$@"
-  )"
+  bl-select "$prompt" "$@"
 }
 
 notify() {

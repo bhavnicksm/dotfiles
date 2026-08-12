@@ -50,7 +50,6 @@ let
 
   btopTheme = renderTemplate (render ./templates/btop.theme.tpl) palette;
   btopConf = renderTemplate (render ./templates/btop.conf.tpl) { color_theme = themeName; };
-  wofiStyle = renderTemplate (render ./templates/wofi-style.css.tpl) palette;
 
   # Theme wallpaper: palettes carry a `wallpaper` key naming a file in
   # wallpapers/.
@@ -226,9 +225,18 @@ in
       green = palette.green;
     };
 
-    # wofi
-    xdg.configFile."wofi/style.css".text = wofiStyle;
-    xdg.configFile."wofi/style.css".force = true;
+    # blaunch (bnixos flakes/blaunch) — the Quickshell launcher. The same
+    # 7-color subset as bbar, so the launcher follows themes.theme too.
+    blaunch.palette = {
+      background = palette.background;
+      foreground = palette.foreground;
+      accent = palette.accent;
+      muted = palette.muted;
+      selection = palette.selection;
+      red = palette.red;
+      yellow = palette.yellow;
+      green = palette.green;
+    };
 
     # btop
     xdg.configFile."btop/btop.conf".text = btopConf;

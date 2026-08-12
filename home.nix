@@ -5,6 +5,8 @@
     inputs.sops-nix.homeManagerModules.sops
     ./themes/theme-module.nix
     inputs.bnixos.homeModules.bbar
+    inputs.bnixos.homeModules.blaunch
+    inputs.bnixos.homeModules.bipc
   ];
 
   home.username = "bhavnick";
@@ -159,7 +161,7 @@
         # Keybindings for Hyprland
         bind = [
           { _args = [ (m "RETURN") (exec "ghostty") ]; }
-          { _args = [ (m "SPACE") (exec "~/.local/bin/launcher.sh") ]; }
+          { _args = [ (m "SPACE") (exec "~/.local/bin/bl-launch") ]; }
           { _args = [ (m "B") (exec "~/.local/bin/bt-menu.sh") ]; }
           { _args = [ (m "W") (inline "hl.dsp.window.close()") ]; }          # killactive
           { _args = [ (m "M") (inline "hl.dsp.exit()") ]; }                  # exit
@@ -264,6 +266,16 @@
   # place to edit it. The palette is wired from the active theme in
   # themes/theme-module.nix; bbar runs via its own systemd.user.services.bbar.
   bbar.enable = true;
+
+  # The launcher is blaunch (bnixos flakes/blaunch) — a Quickshell app menu.
+  # It takes over both the fuzzel app search ($mod SPACE → bl-launch) and the
+  # `--dmenu` prompts scripts used (bt-menu.sh → bl-select). The palette is
+  # wired from the active theme in themes/theme-module.nix; it runs via its
+  # own systemd.user.services.blaunch.
+  blaunch.enable = true;
+
+  # The shared Quickshell IPC client (b-ipc) bl-launch/bl-select prefer.
+  bipc.enable = true;
 
   # The home.packages option allows you to install Nix packages into your
   # environment. The full default desktop (shell, Hyprland stack, secrets,
@@ -418,10 +430,6 @@
 
   # Personal helper scripts (launcher, theme selector)
   home.file = {
-    ".local/bin/launcher.sh".source = ./bin/launcher.sh;
-    ".local/bin/launcher.sh".executable = true;
-    ".local/bin/theme-selector.sh".source = ./bin/theme-selector.sh;
-    ".local/bin/theme-selector.sh".executable = true;
     ".local/bin/bt-menu.sh".source = ./bin/bt-menu.sh;
     ".local/bin/bt-menu.sh".executable = true;
     ".local/bin/bt-power.sh".source = ./bin/bt-power.sh;

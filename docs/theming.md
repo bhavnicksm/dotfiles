@@ -53,8 +53,8 @@ then:
 nixos-rebuild switch --flake ~/dotfiles
 ```
 
-or use the launcher flow (`launcher.sh` → Themes → pick), which edits that one
-line and rebuilds via `bin/theme-selector.sh`.
+The old `theme-selector.sh` flow is retired — switching themes is fully
+declarative (edit that one line, rebuild).
 
 ### What each app reads
 
@@ -64,7 +64,6 @@ line and rebuilds via `bin/theme-selector.sh`.
 | Hyprland | `home-manager` `wayland.windowManager.hyprland` | `foreground` → active border, `muted` → inactive border |
 | Ghostty | `programs.ghostty.themes.<name>` | `background`, `foreground`, `cursor`, `selection`, 16-color ANSI palette |
 | btop | `~/.config/btop/themes/<name>.theme` + `btop/btop.conf` (tpl) | all semantic colors |
-| wofi | `wofi/style.css` (tpl) | `background`, `foreground`, `accent`, `selection`, `dark_background` |
 | GTK | `gtk.theme` | `mode` → `Adwaita` (light) / `Adwaita-dark` |
 
 ## Adding a theme
@@ -83,13 +82,13 @@ Because the palette keys are shared, one new palette themes every app at once.
 The `themes/templates/` files are the only hand-written CSS/config in the
 pipeline:
 
-- `wofi-style.css.tpl` — launcher styling.
 - `btop.theme.tpl` — btop theme file.
 - `btop.conf.tpl` — btop options; only `color_theme` is templated.
 
 The status bar is **not** themed here: it's bnixos's `bbar`, a Quickshell bar
 whose `bbar.palette` we fill from the active palette (one line per color in
-`theme-module.nix`). Edit the bar engine in bnixos, not here.
+`theme-module.nix`). The launcher `blaunch` takes the same 7-color subset via
+`blaunch.palette`. Edit the launcher/bar engines in bnixos, not here.
 
 Static, theme-independent config stays under `config/` and is wired through
 `config.nix` (currently `gtk-3.0`, `pavucontrol.ini`, `starship.toml`).
