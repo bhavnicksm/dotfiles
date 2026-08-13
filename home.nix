@@ -7,7 +7,7 @@
     inputs.bnixos.homeModules.bbar
     inputs.bnixos.homeModules.blaunch
     inputs.bnixos.homeModules.bipc
-    inputs.bnixos.homeModules.bkeys
+    inputs.bnixos.homeModules.bbinds
   ];
 
   home.username = "bhavnick";
@@ -110,15 +110,15 @@
     configType = "lua";
     settings =
       let
-        # The bind list + modifier are owned by the bkeys home module
-        # (inputs.bnixos.homeModules.bkeys): keybinds.hyprlandBind is the
+        # The bind list + modifier are owned by the bbinds home module
+        # (inputs.bnixos.homeModules.bbinds): keybinds.hyprlandBind is the
         # rendered [ { _args = [...] } ] list, keybinds.hyprlandModifier the
         # `local mod` splice. Inherit the bnixos defaults and override
         # declaratively in the `keybinds` block further down.
       in
       {
         # Basic Settings: `local mod = "SUPER"` (was `$mod`). Comes from
-        # bkeys so there is exactly one place to set the modifier.
+        # bbinds so there is exactly one place to set the modifier.
         mod = config.keybinds.hyprlandModifier;
 
         # Plain config options (general/decoration/animations) go through a
@@ -156,8 +156,8 @@
         # home.sessionVariables (HYPRCURSOR_*/XCURSOR_*). The module's systemd
         # activation hook is generated automatically.
 
-        # Keybindings for Hyprland — inherited from bkeys (bnixos
-        # flakes/bkeys): the single place that defines WM keybindings. The
+        # Keybindings for Hyprland — inherited from bbinds (bnixos
+        # flakes/bbinds): the single place that defines WM keybindings. The
         # defaults live in `keybinds.bind` there; this machine's tweaks are
         # in the `keybinds` block in this file.
         bind = config.keybinds.hyprlandBind;
@@ -165,7 +165,7 @@
   };
 
   # The per-machine keybindings. The defaults are inherited from bnixos
-  # (inputs.bnixos.homeModules.bkeys); change them declaratively here via
+  # (inputs.bnixos.homeModules.bbinds); change them declaratively here via
   # `keybinds.override` (deep-merged over the defaults, null = remove):
   #   keybinds.override.<name>.key = "…";   # rebind a key only
   #   keybinds.override.<name>     = null;  # drop a default binding
