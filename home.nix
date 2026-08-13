@@ -133,9 +133,10 @@
             # theme via themes/theme-module.nix (Lua "rgba(r,g,b,a)" format).
           };
 
-          # Subtle rounded window corners
+          # Square window corners (matches blaunch's rounding = 0 so the
+          # launcher's selection border reads like a focused window).
           decoration = {
-            rounding = 6;
+            rounding = 0;
           };
 
           # Setting the animations to false for now
