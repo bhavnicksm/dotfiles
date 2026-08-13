@@ -7,6 +7,7 @@
     inputs.bnixos.homeModules.bbar
     inputs.bnixos.homeModules.blaunch
     inputs.bnixos.homeModules.bipc
+    inputs.bnixos.homeModules.bkeys
   ];
 
   home.username = "bhavnick";
@@ -109,19 +110,16 @@
     configType = "lua";
     settings =
       let
-        inline = lib.generators.mkLuaInline;
-        # key strings reuse the `mod` local (SUPER) defined below.
-        m  = key: inline "mod .. \" + ${key}\"";
-        ms = key: inline "mod .. \" + SHIFT + ${key}\"";
-        exec  = cmd: inline ''hl.dsp.exec_cmd("${cmd}")'';
-        focus = dir: inline ''hl.dsp.focus({ direction = "${dir}" })'';
-        swap  = dir: inline ''hl.dsp.window.swap({ direction = "${dir}" })'';
-        ws    = w: inline ''hl.dsp.focus({ workspace = "${w}" })'';
-        movews = w: inline ''hl.dsp.window.move({ workspace = "${w}", follow = true })'';
+        # The bind list + modifier are owned by the bkeys home module
+        # (inputs.bnixos.homeModules.bkeys): keybinds.hyprlandBind is the
+        # rendered [ { _args = [...] } ] list, keybinds.hyprlandModifier the
+        # `local mod` splice. Inherit the bnixos defaults and override
+        # declaratively in the `keybinds` block further down.
       in
       {
-        # Basic Settings: `local mod = "SUPER"` (was `$mod`)
-        mod._var = "SUPER";
+        # Basic Settings: `local mod = "SUPER"` (was `$mod`). Comes from
+        # bkeys so there is exactly one place to set the modifier.
+        mod = config.keybinds.hyprlandModifier;
 
         # Plain config options (general/decoration/animations) go through a
         # single `hl.config({ … })` call — there is no hl.general/hl.decoration/
@@ -158,78 +156,24 @@
         # home.sessionVariables (HYPRCURSOR_*/XCURSOR_*). The module's systemd
         # activation hook is generated automatically.
 
-        # Keybindings for Hyprland
-        bind = [
-          { _args = [ (m "RETURN") (exec "ghostty") ]; }
-          { _args = [ (m "SPACE") (exec "bl-launch") ]; }
-          { _args = [ (m "B") (exec "~/.local/bin/bt-menu.sh") ]; }
-          { _args = [ (m "W") (inline "hl.dsp.window.close()") ]; }          # killactive
-          { _args = [ (m "M") (inline "hl.dsp.exit()") ]; }                  # exit
-          { _args = [ (m "E") (exec "thunar") ]; }
-          { _args = [ (m "V") (inline "hl.dsp.window.float({ action = \"toggle\" })") ]; } # togglefloating
-          { _args = [ (m "P") (exec "${lib.getExe browser}") ]; }                   # open the default browser (bnixos.packages.browser)
-          # togglesplit: no hl.dsp.window.split on 0.55; best-effort via the
-          # dwindle layout message. REVISIT (see docs/hyprland-lua.md).
-          { _args = [ (m "J") (inline "hl.dsp.layout(\"togglesplit\")") ]; }
-          { _args = [ (m "L") (exec "hyprlock") ]; }
-
-          # Move focus
-          { _args = [ (m "left") (focus "l") ]; }
-          { _args = [ (m "right") (focus "r") ]; }
-          { _args = [ (m "up") (focus "u") ]; }
-          { _args = [ (m "down") (focus "d") ]; }
-
-          # Swap the focused window with its neighbor within the workspace
-          { _args = [ (ms "left") (swap "l") ]; }
-          { _args = [ (ms "right") (swap "r") ]; }
-          { _args = [ (ms "up") (swap "u") ]; }
-          { _args = [ (ms "down") (swap "d") ]; }
-
-          # Switch Workspaces
-          { _args = [ (m "1") (ws "1") ]; }
-          { _args = [ (m "2") (ws "2") ]; }
-          { _args = [ (m "3") (ws "3") ]; }
-          { _args = [ (m "4") (ws "4") ]; }
-          { _args = [ (m "5") (ws "5") ]; }
-          { _args = [ (m "6") (ws "6") ]; }
-          { _args = [ (m "7") (ws "7") ]; }
-          { _args = [ (m "8") (ws "8") ]; }
-          { _args = [ (m "9") (ws "9") ]; }
-
-          # Shift window to workspace
-          { _args = [ (ms "1") (movews "1") ]; }
-          { _args = [ (ms "2") (movews "2") ]; }
-          { _args = [ (ms "3") (movews "3") ]; }
-          { _args = [ (ms "4") (movews "4") ]; }
-          { _args = [ (ms "5") (movews "5") ]; }
-          { _args = [ (ms "6") (movews "6") ]; }
-          { _args = [ (ms "7") (movews "7") ]; }
-          { _args = [ (ms "8") (movews "8") ]; }
-          { _args = [ (ms "9") (movews "9") ]; }
-
-          # Scroll through the workspaces
-          { _args = [ (m "mouse_down") (ws "e+1") ]; }
-          { _args = [ (m "mouse_up") (ws "e-1") ]; }
-
-          # Screenshots ($( … ) expands via the exec_cmd shell)
-          { _args = [ "Print" (inline ''hl.dsp.exec_cmd("grim ~/Pictures/screenshot-$(date +%Y%m%d-%H%M%S).png")'') ]; }
-          { _args = [ (m "Print") (inline ''hl.dsp.exec_cmd("grim -g \"$(slurp)\" ~/Pictures/screenshot-$(date +%Y%m%d-%H%M%S).png")'') ]; }
-          { _args = [ "SHIFT + Print" (inline ''hl.dsp.exec_cmd("grim -g \"$(slurp)\" - | wl-copy")'') ]; }
-
-          # Media keys (was bindl = locked-screen binds)
-          { _args = [ "XF86AudioRaiseVolume" (exec "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+") { locked = true; } ]; }
-          { _args = [ "XF86AudioLowerVolume" (exec "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-") { locked = true; } ]; }
-          { _args = [ "XF86AudioMute" (exec "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle") { locked = true; } ]; }
-          { _args = [ "XF86AudioMicMute" (exec "wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle") { locked = true; } ]; }
-          { _args = [ "XF86MonBrightnessUp" (exec "brightnessctl set 5%+") { locked = true; } ]; }
-          { _args = [ "XF86MonBrightnessDown" (exec "brightnessctl set 5%-") { locked = true; } ]; }
-        ];
+        # Keybindings for Hyprland — inherited from bkeys (bnixos
+        # flakes/bkeys): the single place that defines WM keybindings. The
+        # defaults live in `keybinds.bind` there; this machine's tweaks are
+        # in the `keybinds` block in this file.
+        bind = config.keybinds.hyprlandBind;
       };
   };
 
-  # Desktop daemons run as declarative user services (modular, restarted on
-  # failure) instead of inline autostart Lua. They start once the graphical
-  # session is up (hyprland-session.target guarantees the Wayland env).
+  # The per-machine keybindings. The defaults are inherited from bnixos
+  # (inputs.bnixos.homeModules.bkeys); change them declaratively here via
+  # `keybinds.override` (deep-merged over the defaults, null = remove):
+  #   keybinds.override.<name>.key = "…";   # rebind a key only
+  #   keybinds.override.<name>     = null;  # drop a default binding
+  #   keybinds.override.my-script  = { key = "…"; exec = "…"; }  # add one
+  keybinds.enable = true;
+  # Machine-specific overrides on the bnixos defaults:
+  keybinds.override.browser = { key = "P"; exec = "${lib.getExe browser}"; }; # bnixos.packages.browser
+  keybinds.override.menu = { key = "B"; exec = "~/.local/bin/bt-menu.sh"; }; # bt scripts
   systemd.user.services = {
     # Scoped to hyprland-session.target (started by Hyprland's own activation
     # hook AFTER dbus-update-activation-environment sets the Wayland env).

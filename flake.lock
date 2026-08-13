@@ -38,6 +38,25 @@
         "bnixos"
       ]
     },
+    "bkeys": {
+      "inputs": {
+        "nixpkgs": [
+          "bnixos",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "path": "./flakes/bkeys",
+        "type": "path"
+      },
+      "original": {
+        "path": "./flakes/bkeys",
+        "type": "path"
+      },
+      "parent": [
+        "bnixos"
+      ]
+    },
     "blaunch": {
       "inputs": {
         "nixpkgs": [
@@ -61,17 +80,18 @@
       "inputs": {
         "bbar": "bbar",
         "bipc": "bipc",
+        "bkeys": "bkeys",
         "blaunch": "blaunch",
         "home-manager": "home-manager",
         "nixos-hardware": "nixos-hardware",
         "nixpkgs": "nixpkgs"
       },
       "locked": {
-        "lastModified": 1786580579,
-        "narHash": "sha256-PlMjrYFQuuTrzrOM1b5RdT5wSKSBas6IA7drcF1ezU4=",
+        "lastModified": 1786582698,
+        "narHash": "sha256-4Vrao9QSNx4+T7BSfJFVyuoTrBVE92s3u/m1OSKdUr4=",
         "ref": "refs/heads/main",
-        "rev": "fa782821a8c64d03a5d66981e3e9e4e9501368ed",
-        "revCount": 70,
+        "rev": "14d519a136fa116c28cfe1d0d6eeb00911407567",
+        "revCount": 71,
         "type": "git",
         "url": "ssh://git@github.com/bhavnicksm/bnixos.git"
       },
