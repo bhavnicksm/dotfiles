@@ -124,7 +124,8 @@ home.file.".local/bin/bt-device.sh".executable = true;
 
 ## Keybindings (home.nix hyprland bind)
 
-- `$mod SPACE` → `~/.local/bin/bl-launch` (toggles the blaunch app menu)
+- `$mod SPACE` → `bl-launch` (toggles the blaunch app menu; on PATH via
+  `inputs.bnixos.homeModules.blaunch`'s `home.packages`, not `~/.local/bin`)
 - `$mod B` → `~/.local/bin/bt-menu.sh`
 
 ## Verification

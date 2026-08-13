@@ -130,7 +130,7 @@ from the `bipc` flake).
 
 | Key | Action | Source |
 |---|---|---|
-| `$mod SPACE` | `~/.local/bin/bl-launch` | `home.nix` `wayland.windowManager.hyprland` bind |
+| `$mod SPACE` | `bl-launch` (ON PATH via the blaunch flake) | `home.nix` `wayland.windowManager.hyprland` bind |
 | `$mod B` | `~/.local/bin/bt-menu.sh` | same |
 
 ### Testing changes

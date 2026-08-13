@@ -161,7 +161,7 @@
         # Keybindings for Hyprland
         bind = [
           { _args = [ (m "RETURN") (exec "ghostty") ]; }
-          { _args = [ (m "SPACE") (exec "~/.local/bin/bl-launch") ]; }
+          { _args = [ (m "SPACE") (exec "bl-launch") ]; }
           { _args = [ (m "B") (exec "~/.local/bin/bt-menu.sh") ]; }
           { _args = [ (m "W") (inline "hl.dsp.window.close()") ]; }          # killactive
           { _args = [ (m "M") (inline "hl.dsp.exit()") ]; }                  # exit
