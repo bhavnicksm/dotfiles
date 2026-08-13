@@ -172,7 +172,7 @@
   #   keybinds.override.my-script  = { key = "…"; exec = "…"; }  # add one
   keybinds.enable = true;
   # Machine-specific overrides on the bnixos defaults:
-  keybinds.override.browser = { key = "P"; exec = "${lib.getExe browser}"; }; # bnixos.packages.browser
+  keybinds.override.browser = { key = "P"; exec = "${lib.getExe browser} --new-window"; }; # bnixos.packages.browser
   keybinds.override.menu = { key = "B"; exec = "~/.local/bin/bt-menu.sh"; }; # bt scripts
   systemd.user.services = {
     # Scoped to hyprland-session.target (started by Hyprland's own activation
