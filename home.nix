@@ -137,6 +137,11 @@
           # launcher's selection border reads like a focused window).
           decoration = {
             rounding = 0;
+            # No drop shadows (omarchy style): the launcher card and windows
+            # render flat, relying on their 2px borders alone.
+            shadow = {
+              enabled = false;
+            };
           };
 
           # Setting the animations to false for now
@@ -153,9 +158,10 @@
         };
 
         # No autostart hook: bbar/dunst/hyprpaper are systemd.user.services,
-        # gnome-keyring via services.gnome-keyring, and the cursor theme via
-        # home.sessionVariables (HYPRCURSOR_*/XCURSOR_*). The module's systemd
-        # activation hook is generated automatically.
+        # gnome-keyring is system-owned (NixOS module: PAM auto_start + D-Bus
+        # activation), and the cursor theme via home.sessionVariables
+        # (HYPRCURSOR_*/XCURSOR_*). The module's systemd activation hook is
+        # generated automatically.
 
         # Keybindings for Hyprland — inherited from bbinds (bnixos
         # flakes/bbinds): the single place that defines WM keybindings. The
@@ -234,6 +240,9 @@
     # Desktop applications (unfree / personal)
     spotify
     code-cursor-fhs
+
+    # Nix language server (opencode lsp)
+    nil
   ];
   
   # Setting the font
@@ -322,19 +331,10 @@
     ];
   };
   
-  # Adding all the home-manager services here
-
-  # Adding the Gnome Keyring to manage the secrets
-  services.gnome-keyring = {
-    enable = true;
-    components = [ "secrets" ];  # Just the secrets component
-  };
-
-  home.file.".local/share/dbus-1/services/org.freedesktop.secrets.service".text = ''
-    [D-BUS Service]
-    Name=org.freedesktop.secrets
-    Exec=${pkgs.gnome-keyring}/bin/gnome-keyring-daemon --foreground --components=secrets
-  '';
+  # gnome-keyring is system-owned (bnixos configuration.nix:
+  # services.gnome.gnome-keyring.enable): PAM auto_start unlocks the login
+  # keyring at SDDM login and D-Bus activation starts the daemon on demand.
+  # No HM services.gnome-keyring / hand-written dbus service file here.
 
   # Home Manager can also manage your environment variables through
   # 'home.sessionVariables'. These will be explicitly sourced when using a
@@ -375,6 +375,12 @@
 
   # Personal helper scripts (launcher, theme selector)
   home.file = {
+    # Force Electron's safeStorage backend to gnome-libsecret: on Hyprland
+    # (XDG_CURRENT_DESKTOP=Hyprland) Chromium's os_crypt autodetection does
+    # not pick the keyring and Cursor shows "An OS keyring couldn't be
+    # identified for storing the encryption related data".
+    ".config/Cursor/argv.json".text = builtins.toJSON { password-store = "gnome-libsecret"; };
+
     ".local/bin/bt-menu.sh".source = ./bin/bt-menu.sh;
     ".local/bin/bt-menu.sh".executable = true;
     ".local/bin/bt-power.sh".source = ./bin/bt-power.sh;

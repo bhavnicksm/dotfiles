@@ -205,9 +205,18 @@ Given 26.05 froze some tools at broken versions, for any suspect package:
 - **Never add `After = hyprland-session.target`** — combined with the WantedBy
   it creates an ordering cycle and systemd deletes the start job (daemons
   silently never launch; watch for it in `journalctl --user -u <svc>`).
-- Autostart one-shots are handled declaratively too: gnome-keyring via
-  `services.gnome-keyring`, cursor theme via `home.sessionVariables`
+- Autostart one-shots are handled declaratively too: gnome-keyring is
+  **system-owned** (bnixos `configuration.nix` →
+  `services.gnome.gnome-keyring.enable`: PAM `auto_start` unlocks the login
+  keyring at SDDM login via the `login` PAM service — the per-service
+  `security.pam.services.sddm.enableGnomeKeyring` is silently ignored because
+  the sddm module uses `useDefaultRules = false` — plus D-Bus activation via
+  the `/run/wrappers` setcap wrapper), cursor theme via `home.sessionVariables`
   (`HYPRCURSOR_*`/`XCURSOR_*`) — no `hyprctl setcursor` exec needed.
+- Cursor: `~/.config/Cursor/argv.json` (HM-managed) forces
+  `"password-store": "gnome-libsecret"` — on Hyprland, Electron's os_crypt
+  autodetection doesn't pick the keyring and Cursor shows "An OS keyring
+  couldn't be identified".
 
 ### hyprpaper ≥ 0.8 (hyprtoolkit rewrite)
 
