@@ -1,23 +1,188 @@
 {
   "nodes": {
+    "bbar": {
+      "inputs": {
+        "nixpkgs": [
+          "bnixos",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "path": "./flakes/bbar",
+        "type": "path"
+      },
+      "original": {
+        "path": "./flakes/bbar",
+        "type": "path"
+      },
+      "parent": [
+        "bnixos"
+      ]
+    },
+    "bbinds": {
+      "inputs": {
+        "nixpkgs": [
+          "bnixos",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "path": "./flakes/bbinds",
+        "type": "path"
+      },
+      "original": {
+        "path": "./flakes/bbinds",
+        "type": "path"
+      },
+      "parent": [
+        "bnixos"
+      ]
+    },
+    "bblue": {
+      "inputs": {
+        "nixpkgs": [
+          "bnixos",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "path": "./flakes/bblue",
+        "type": "path"
+      },
+      "original": {
+        "path": "./flakes/bblue",
+        "type": "path"
+      },
+      "parent": [
+        "bnixos"
+      ]
+    },
+    "bipc": {
+      "inputs": {
+        "nixpkgs": [
+          "bnixos",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "path": "./flakes/bipc",
+        "type": "path"
+      },
+      "original": {
+        "path": "./flakes/bipc",
+        "type": "path"
+      },
+      "parent": [
+        "bnixos"
+      ]
+    },
+    "blaunch": {
+      "inputs": {
+        "nixpkgs": [
+          "bnixos",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "path": "./flakes/blaunch",
+        "type": "path"
+      },
+      "original": {
+        "path": "./flakes/blaunch",
+        "type": "path"
+      },
+      "parent": [
+        "bnixos"
+      ]
+    },
     "bnixos": {
       "inputs": {
+        "bbar": "bbar",
+        "bbinds": "bbinds",
+        "bblue": "bblue",
+        "bipc": "bipc",
+        "blaunch": "blaunch",
+        "bnixvim": "bnixvim",
+        "bnotif": "bnotif",
         "home-manager": "home-manager",
         "nixos-hardware": "nixos-hardware",
         "nixpkgs": "nixpkgs"
       },
       "locked": {
-        "lastModified": 1786481597,
-        "narHash": "sha256-ucCfR+zfjxEylrtcfHkDkDa9D8uIWjYYeAls2o+NCEo=",
-        "ref": "refs/heads/main",
-        "rev": "0658341b0ff6335bdb2a8bc5c640bce588da58cc",
-        "revCount": 36,
+        "lastModified": 1787691137,
+        "narHash": "sha256-yQfCdo1qvp8eSkajkMQlzSWNpOsb9ys3iW7ZXhUBzwQ=",
+        "ref": "bblue/tui",
+        "rev": "5b5f0d34d37700688942f371c3bc8a69b2713c81",
+        "revCount": 96,
         "type": "git",
         "url": "ssh://git@github.com/bhavnicksm/bnixos.git"
       },
       "original": {
+        "ref": "bblue/tui",
         "type": "git",
         "url": "ssh://git@github.com/bhavnicksm/bnixos.git"
+      }
+    },
+    "bnixvim": {
+      "inputs": {
+        "nixpkgs": [
+          "bnixos",
+          "nixpkgs"
+        ],
+        "nixvim": "nixvim"
+      },
+      "locked": {
+        "path": "./flakes/bnixvim",
+        "type": "path"
+      },
+      "original": {
+        "path": "./flakes/bnixvim",
+        "type": "path"
+      },
+      "parent": [
+        "bnixos"
+      ]
+    },
+    "bnotif": {
+      "inputs": {
+        "nixpkgs": [
+          "bnixos",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "path": "./flakes/bnotif",
+        "type": "path"
+      },
+      "original": {
+        "path": "./flakes/bnotif",
+        "type": "path"
+      },
+      "parent": [
+        "bnixos"
+      ]
+    },
+    "flake-parts": {
+      "inputs": {
+        "nixpkgs-lib": [
+          "bnixos",
+          "bnixvim",
+          "nixvim",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1785627969,
+        "narHash": "sha256-4dtXQk/NMePegK/nWp5NSeuZKLATItOq61lpEvmXqGw=",
+        "owner": "hercules-ci",
+        "repo": "flake-parts",
+        "rev": "427bf4bd9435fdf21321c8cc628c24efc14c0f7a",
+        "type": "github"
+      },
+      "original": {
+        "owner": "hercules-ci",
+        "repo": "flake-parts",
+        "type": "github"
       }
     },
     "home-manager": {
@@ -74,6 +239,47 @@
         "type": "github"
       }
     },
+    "nixpkgs-unstable": {
+      "locked": {
+        "lastModified": 1786384358,
+        "narHash": "sha256-RzPPiWeUtuvymnpuEWsdtzli5w4kjZs49FqEs3/1u+I=",
+        "owner": "nixos",
+        "repo": "nixpkgs",
+        "rev": "2fcb964de67fcf60b43471c55d5d99e61a9ccb5a",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nixos",
+        "ref": "nixos-unstable",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "nixvim": {
+      "inputs": {
+        "flake-parts": "flake-parts",
+        "nixpkgs": [
+          "bnixos",
+          "bnixvim",
+          "nixpkgs"
+        ],
+        "systems": "systems"
+      },
+      "locked": {
+        "lastModified": 1787536726,
+        "narHash": "sha256-aBh5Yk9tX8ZV4k10BJr2fvTq0/+iWGegaCMUOU7YKas=",
+        "owner": "nix-community",
+        "repo": "nixvim",
+        "rev": "e2c3f9f36326d07340626847543c557e2b95fb50",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-community",
+        "ref": "nixos-26.05",
+        "repo": "nixvim",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
         "bnixos": "bnixos",
@@ -89,6 +295,7 @@
           "bnixos",
           "nixpkgs"
         ],
+        "nixpkgs-unstable": "nixpkgs-unstable",
         "sops-nix": "sops-nix"
       }
     },
@@ -109,6 +316,21 @@
       "original": {
         "owner": "Mic92",
         "repo": "sops-nix",
+        "type": "github"
+      }
+    },
+    "systems": {
+      "locked": {
+        "lastModified": 1681028828,
+        "narHash": "sha256-Vy1rq5AaRuLzOxct8nz4T6wlgyUR7zLU309k9mBC768=",
+        "owner": "nix-systems",
+        "repo": "default",
+        "rev": "da67096a3b9bf56a91d16901293e51ba5b49a27e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-systems",
+        "repo": "default",
         "type": "github"
       }
     }

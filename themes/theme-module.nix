@@ -21,9 +21,6 @@ let
       template
       (builtins.attrNames attrs);
 
-  # Hex "#rrggbb" -> hyprland "rgb(XXXXXX)" (no commas, 6 hex digits).
-  hyprColor = hex: "rgb(${lib.removePrefix "#" hex})";
-
   # Hex "#rrggbb" -> hyprland "rgba(r, g, b, a)" with alpha 0-1.
   hexToRgba = hex: alpha:
     let
@@ -53,18 +50,14 @@ let
 
   btopTheme = renderTemplate (render ./templates/btop.theme.tpl) palette;
   btopConf = renderTemplate (render ./templates/btop.conf.tpl) { color_theme = themeName; };
-  waybarStyle = renderTemplate (render ./templates/waybar-style.css.tpl) palette;
-  wofiStyle = renderTemplate (render ./templates/wofi-style.css.tpl) palette;
 
   # Theme wallpaper: palettes carry a `wallpaper` key naming a file in
   # wallpapers/.
   wallpaperPath = "${../wallpapers}/${palette.wallpaper}";
 
-  hyprpaperConf = ''
-    preload = ${wallpaperPath}
-    wallpaper = ,${wallpaperPath}
-    splash = false
-  '';
+  # hyprpaper config lives in themes/templates/hyprpaper.conf.tpl (hyprpaper
+  # >= 0.8 block format); only the themed wallpaper path is injected here.
+  hyprpaperConf = renderTemplate (render ./templates/hyprpaper.conf.tpl) { wallpaper = wallpaperPath; };
 
   hyprlockConf = renderTemplate (render ./templates/hyprlock.conf.tpl) ({
     # Omarchy lock surface: theme background at 80% alpha, accent border,
@@ -217,18 +210,64 @@ in
   };
 
   config = {
-    # Waybar
-    xdg.configFile."waybar/config".source = ../config/waybar/config;
-    xdg.configFile."waybar/config".force = true;
-    xdg.configFile."waybar/style.css".text = waybarStyle;
-    xdg.configFile."waybar/style.css".force = true;
-    xdg.configFile."waybar/scripts".source = ../config/waybar/scripts;
-    xdg.configFile."waybar/scripts".recursive = true;
-    xdg.configFile."waybar/scripts".force = true;
+    # bbar (bnixos flakes/bbar) — the Quickshell status bar. Its 7-color
+    # palette comes from the active Omarchy palette (a strict subset of the
+    # full palette's keys), so the bar follows themes.theme like everything
+    # else.
+    bbar.palette = {
+      background = palette.background;
+      foreground = palette.foreground;
+      accent = palette.accent;
+      muted = palette.muted;
+      selection = palette.selection;
+      red = palette.red;
+      yellow = palette.yellow;
+      green = palette.green;
+    };
 
-    # wofi
-    xdg.configFile."wofi/style.css".text = wofiStyle;
-    xdg.configFile."wofi/style.css".force = true;
+    # blaunch (bnixos flakes/blaunch) — the Quickshell launcher. The same
+    # 7-color subset as bbar, so the launcher follows themes.theme too.
+    blaunch.palette = {
+      background = palette.background;
+      foreground = palette.foreground;
+      accent = palette.accent;
+      muted = palette.muted;
+      selection = palette.selection;
+      red = palette.red;
+      yellow = palette.yellow;
+      green = palette.green;
+    };
+
+    # bnotif (bnixos flakes/bnotif) — the Quickshell notification daemon.
+    # Same 7-color subset as bbar/blaunch; toasts follow themes.theme too.
+    bnotif.palette = {
+      background = palette.background;
+      foreground = palette.foreground;
+      accent = palette.accent;
+      muted = palette.muted;
+      selection = palette.selection;
+      red = palette.red;
+      yellow = palette.yellow;
+      green = palette.green;
+    };
+
+    # bnixvim (bnixos flakes/bnixvim) — nvim themed from the palette like
+    # every other consumer. The required 8-key subset plus the syntax
+    # refinement extras (orange is absent from Omarchy palettes and falls
+    # back inside bnixvim).
+    bnixvim.palette = {
+      background = palette.background;
+      foreground = palette.foreground;
+      accent = palette.accent;
+      muted = palette.muted;
+      selection = palette.selection;
+      red = palette.red;
+      yellow = palette.yellow;
+      green = palette.green;
+      blue = palette.blue;
+      cyan = palette.cyan;
+      magenta = palette.magenta;
+    };
 
     # btop
     xdg.configFile."btop/btop.conf".text = btopConf;
@@ -260,9 +299,11 @@ in
     programs.ghostty.themes.${themeName} = ghosttyTheme;
     programs.ghostty.settings.theme = themeName;
 
-    # Hyprland borders follow the palette (foreground = active, muted = inactive)
-    wayland.windowManager.hyprland.settings.general."col.active_border" = hyprColor palette.foreground;
-    wayland.windowManager.hyprland.settings.general."col.inactive_border" = hyprColor palette.muted;
+    # Hyprland borders follow the palette (foreground = active, muted = inactive).
+    # Lua config reads colors as "rgba(r,g,b,a)" strings (hyprlang's comma-less
+    # "rgb(XXXXXX)" is not valid in ~/.config/hypr/hyprland.lua).
+    wayland.windowManager.hyprland.settings.config.general."col.active_border" = hexToRgba palette.foreground 1.0;
+    wayland.windowManager.hyprland.settings.config.general."col.inactive_border" = hexToRgba palette.muted 1.0;
 
     # GTK
     gtk.theme = {

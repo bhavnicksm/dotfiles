@@ -2,8 +2,13 @@
   description = "Personal NixOS consumer of bnixos";
 
   inputs = {
-    # Private repo: fetch over SSH so flakes can authenticate
-    bnixos.url = "git+ssh://git@github.com/bhavnicksm/bnixos.git";
+    # Private repo: fetch over SSH so flakes can authenticate. Follows the
+    # default branch (main); feature branches get an explicit ?ref= during
+    # development, dropped once merged. Currently pinned to bnixvim/init-lsp
+    # (bnixvim component) — drop the ?ref= once that merges to main.
+    # (bnixvim plugins round: completions/telescope/oil/treesitter) — drop the
+    # ?ref= once bnixvim/plugins merges to main.
+    bnixos.url = "git+ssh://git@github.com/bhavnicksm/bnixos.git?ref=bblue/tui";
     nixpkgs.follows = "bnixos/nixpkgs";
     nixos-hardware.follows = "bnixos/nixos-hardware";
     home-manager.follows = "bnixos/home-manager";
@@ -13,6 +18,11 @@
       url = "github:Mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    # opencode latest, for an overlay pin: the nixos-26.05 branch froze
+    # opencode at 1.15.10 whose DB migration errors against the 1.18.x data
+    # dir. Keep `opencode` on nixpkgs-unstable (1.18.13) via personal.nix.
+    nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
   };
 
   outputs = { self, bnixos, nixpkgs, nixos-hardware, home-manager, sops-nix, ... }@inputs: {
