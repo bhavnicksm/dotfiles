@@ -8,6 +8,8 @@
     inputs.bnixos.homeModules.blaunch
     inputs.bnixos.homeModules.bipc
     inputs.bnixos.homeModules.bbinds
+    inputs.bnixos.homeModules.bnotif
+    inputs.bnixos.homeModules.bnixvim
   ];
 
   home.username = "bhavnick";
@@ -20,7 +22,6 @@
   themes.theme = "white";
 
   # Manage zsh + starship as the default shell.
-  # OPENROUTER_API_KEY (hm-session-vars) is sourced via ~/.zshrc.
   programs.zsh = {
     enable = true;
     defaultKeymap = "emacs";
@@ -28,6 +29,16 @@
     syntaxHighlighting.enable = true;
     historySubstringSearch.enable = true;
     autosuggestion.enable = true;
+    # Export EVERY sops secret as a per-shell env var (initContent runs on
+    # every .zshrc source, so new secrets picked up without logout — unlike
+    # home.sessionVariables whose hm-session-vars.sh once-guard goes stale).
+    initContent =
+      let
+        exports = lib.mapAttrsToList (name: _:
+          "export ${name}=\"\$(cat ${config.sops.secrets.${name}.path})\""
+        ) config.sops.secrets;
+      in
+      lib.concatStringsSep "\n" exports;
   };
 
   # Fuzzy finder: Ctrl+R history menu, Ctrl+T files, Alt+C cd
@@ -88,7 +99,24 @@
   sops = {
     age.keyFile = "/home/bhavnick/.config/sops/age/keys.txt";
     defaultSopsFile = ./secrets.yaml;
-    secrets.OPENROUTER_API_KEY = { };
+    # Auto-declare every secret: top-level keys of secrets.yaml are
+    # plaintext even in the encrypted file, so parse them at eval time.
+    # Each key becomes `sops.secrets.<name> = { };` and is exported as an
+    # env var per-shell via programs.zsh.initExtra below (NOT
+    # home.sessionVariables — HM's hm-session-vars.sh once-guard makes
+    # sessionVariables stale for any secret added after login).
+    secrets =
+      let
+        topLevelKeys =
+          builtins.filter
+            (x: x != null)
+            (map
+              (line:
+                let m = builtins.match "^([A-Za-z_][A-Za-z0-9_]+): .*" line;
+                in if m == null then null else builtins.head m)
+              (lib.splitString "\n" (builtins.readFile ./secrets.yaml)));
+      in
+      lib.genAttrs topLevelKeys (_: { });
   };
 
   # Setting the cursor theme to use
@@ -157,7 +185,7 @@
           };
         };
 
-        # No autostart hook: bbar/dunst/hyprpaper are systemd.user.services,
+        # No autostart hook: bbar/bnotif/hyprpaper are systemd.user.services,
         # gnome-keyring is system-owned (NixOS module: PAM auto_start + D-Bus
         # activation), and the cursor theme via home.sessionVariables
         # (HYPRCURSOR_*/XCURSOR_*). The module's systemd activation hook is
@@ -187,17 +215,8 @@
     # NOTE: do NOT add After=hydration here — After=hyprland-session.target
     # combined with this WantedBy created a systemd ordering cycle that
     # deleted every start job (bbar/hyprpaper never launched).
-    dunst = {
-      Unit = {
-        Description = "Dunst notification daemon";
-        PartOf = [ "hyprland-session.target" ];
-      };
-      Service = {
-        ExecStart = "${pkgs.dunst}/bin/dunst";
-        Restart = "on-failure";
-      };
-      Install = { WantedBy = [ "hyprland-session.target" ]; };
-    };
+    # dunst is gone: notifications are bnotif (bnixos flakes/bnotif), which
+    # owns its own quickshell-based server via its own systemd service.
 
     hyprpaper = {
       Unit = {
@@ -206,6 +225,18 @@
       };
       Service = {
         ExecStart = "${pkgs.hyprpaper}/bin/hyprpaper";
+        Restart = "on-failure";
+      };
+      Install = { WantedBy = [ "hyprland-session.target" ]; };
+    };
+
+    hyprsunset = {
+      Unit = {
+        Description = "Hyprland blue light filter (night light)";
+        PartOf = [ "hyprland-session.target" ];
+      };
+      Service = {
+        ExecStart = "${pkgs.hyprsunset}/bin/hyprsunset";
         Restart = "on-failure";
       };
       Install = { WantedBy = [ "hyprland-session.target" ]; };
@@ -225,8 +256,20 @@
   # own systemd.user.services.blaunch.
   blaunch.enable = true;
 
+  # Notifications are bnotif (bnixos flakes/bnotif) — a Quickshell freedesktop
+  # notification server with themed toasts, persistent DND ($mod+N), and the
+  # UPower battery watcher. Replaces dunst. The palette is wired from the
+  # active theme in themes/theme-module.nix; it runs via its own
+  # systemd.user.services.bnotif.
+  bnotif.enable = true;
+
   # The shared Quickshell IPC client (b-ipc) bl-launch/bl-select prefer.
   bipc.enable = true;
+
+  # The editor is bnixvim (bnixos flakes/bnixvim) — nixvim-based, themed
+  # from the active palette via themes/theme-module.nix. It owns
+  # ~/.config/nvim; the old HM programs.neovim block is retired.
+  bnixvim.enable = true;
 
   # The home.packages option allows you to install Nix packages into your
   # environment. The full default desktop (shell, Hyprland stack, secrets,
@@ -241,8 +284,15 @@
     spotify
     code-cursor-fhs
 
+    # Blue light filter (night light) for Hyprland. Requires hyprland >= 0.45.
+    hyprsunset
+
     # Nix language server (opencode lsp)
     nil
+
+    # Python + uv for ML/dev workspaces (silver-searcher, gym/dirth)
+    python312
+    uv
   ];
   
   # Setting the font
@@ -300,37 +350,6 @@
     }
   '';
 
-  # Adding the neovim options here
-  programs.neovim = {
-    enable = true;
-    viAlias = true;
-    vimAlias = true;
-
-    # HM owns ~/.config/nvim/init.lua (declarative, idiomatic). The generated
-    # plugin packpath setup is prepended automatically.
-    initLua = ''
-      -- Line numbers
-      vim.opt.number = true           -- Show line numbers
-      vim.opt.relativenumber = true   -- Show relative line numbers (optional)
-
-      -- Basic settings that work well with line numbers
-      vim.opt.cursorline = true       -- Highlight current line
-      vim.opt.signcolumn = "yes"      -- Always show sign column
-
-      -- Gruvbox theme settings
-      vim.opt.termguicolors = true    -- Enable 24-bit RGB colors
-      vim.opt.background = "light"    -- Use light background
-
-      -- gruvbox-nvim ships with this configuration (see plugins below)
-      vim.cmd.colorscheme("gruvbox")
-    '';
-
-    # Adding the vim plugins here
-    plugins = with pkgs.vimPlugins; [
-      gruvbox-nvim
-    ];
-  };
-  
   # gnome-keyring is system-owned (bnixos configuration.nix:
   # services.gnome.gnome-keyring.enable): PAM auto_start unlocks the login
   # keyring at SDDM login and D-Bus activation starts the daemon on demand.
@@ -352,13 +371,12 @@
   #
   #  /etc/profiles/per-user/bhavnick/etc/profile.d/hm-session-vars.sh
   #
+  # Secrets are NOT exported here: HM's hm-session-vars.sh once-guard
+  # (__HM_SESS_VARS_SOURCED) goes stale for any secret added after login.
+  # Secrets are exported per-shell in programs.zsh.initContent above.
+  # Session variables here are only for always-resident static values.
   home.sessionVariables =
-    # Export EVERY sops secret as an env var named after the secret
-    # (e.g. OPENROUTER_API_KEY -> "$(cat <decrypted path>)").
-    # NOTE: env vars are visible to every process + child (/proc/<pid>/environ,
-    # logs); prefer read-from-file unless a secret must be in the environment.
-    (builtins.mapAttrs (name: _: "$(cat ${config.sops.secrets.${name}.path})") config.sops.secrets)
-    // {
+    {
       # Cursor theme for Hyprland/hyprcursor + GTK (declarative replacement
       # for the old `hyprctl setcursor` exec; matches home.pointerCursor below).
       XCURSOR_THEME = "Bibata-Modern-Classic";

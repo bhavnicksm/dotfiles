@@ -4,7 +4,8 @@
   inputs = {
     # Private repo: fetch over SSH so flakes can authenticate. Follows the
     # default branch (main); feature branches get an explicit ?ref= during
-    # development, dropped once merged.
+    # development, dropped once merged. Currently pinned to bnixvim/init-lsp
+    # (bnixvim component) — drop the ?ref= once that merges to main.
     bnixos.url = "git+ssh://git@github.com/bhavnicksm/bnixos.git";
     nixpkgs.follows = "bnixos/nixpkgs";
     nixos-hardware.follows = "bnixos/nixos-hardware";

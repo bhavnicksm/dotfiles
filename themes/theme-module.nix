@@ -238,6 +238,37 @@ in
       green = palette.green;
     };
 
+    # bnotif (bnixos flakes/bnotif) — the Quickshell notification daemon.
+    # Same 7-color subset as bbar/blaunch; toasts follow themes.theme too.
+    bnotif.palette = {
+      background = palette.background;
+      foreground = palette.foreground;
+      accent = palette.accent;
+      muted = palette.muted;
+      selection = palette.selection;
+      red = palette.red;
+      yellow = palette.yellow;
+      green = palette.green;
+    };
+
+    # bnixvim (bnixos flakes/bnixvim) — nvim themed from the palette like
+    # every other consumer. The required 8-key subset plus the syntax
+    # refinement extras (orange is absent from Omarchy palettes and falls
+    # back inside bnixvim).
+    bnixvim.palette = {
+      background = palette.background;
+      foreground = palette.foreground;
+      accent = palette.accent;
+      muted = palette.muted;
+      selection = palette.selection;
+      red = palette.red;
+      yellow = palette.yellow;
+      green = palette.green;
+      blue = palette.blue;
+      cyan = palette.cyan;
+      magenta = palette.magenta;
+    };
+
     # btop
     xdg.configFile."btop/btop.conf".text = btopConf;
     xdg.configFile."btop/btop.conf".force = true;
