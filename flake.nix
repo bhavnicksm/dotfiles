@@ -4,11 +4,8 @@
   inputs = {
     # Private repo: fetch over SSH so flakes can authenticate. Follows the
     # default branch (main); feature branches get an explicit ?ref= during
-    # development, dropped once merged. Currently pinned to bnixvim/init-lsp
-    # (bnixvim component) — drop the ?ref= once that merges to main.
-    # (bnixvim plugins round: completions/telescope/oil/treesitter) — drop the
-    # ?ref= once bnixvim/plugins merges to main.
-    bnixos.url = "git+ssh://git@github.com/bhavnicksm/bnixos.git?ref=bblue/tui";
+    # development, dropped once merged.
+    bnixos.url = "git+ssh://git@github.com/bhavnicksm/bnixos.git";
     nixpkgs.follows = "bnixos/nixpkgs";
     nixos-hardware.follows = "bnixos/nixos-hardware";
     home-manager.follows = "bnixos/home-manager";
