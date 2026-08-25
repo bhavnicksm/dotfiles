@@ -89,15 +89,16 @@
         "nixpkgs": "nixpkgs"
       },
       "locked": {
-        "lastModified": 1787627144,
-        "narHash": "sha256-yf6idyL4rMN+qmJ4maugLuHBlCraigvvaLUSicMWNaE=",
-        "ref": "refs/heads/main",
-        "rev": "c01e75c10cba7ee37afe481dba8f52a4831e86e6",
-        "revCount": 94,
+        "lastModified": 1787629515,
+        "narHash": "sha256-3GBSRCogQg05nK7QOsl/F0GJuDz1j+pJnU3T2GqVBC4=",
+        "ref": "bnixvim/plugins",
+        "rev": "5391a48340d026d954d240ff17f9456e0c4d5189",
+        "revCount": 95,
         "type": "git",
         "url": "ssh://git@github.com/bhavnicksm/bnixos.git"
       },
       "original": {
+        "ref": "bnixvim/plugins",
         "type": "git",
         "url": "ssh://git@github.com/bhavnicksm/bnixos.git"
       }
