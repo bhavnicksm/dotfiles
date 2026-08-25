@@ -23,4 +23,11 @@ lib.genAttrs [ "gtk-3.0" ] (name: {
     source = ./config/pavucontrol.ini;
     force = true;
   };
+
+  # Night light profiles -> ~/.config/hypr/hyprsunset.conf (hyprsunset
+  # discovers its config through Hyprutils, same dir as hyprland.lua).
+  "hypr/hyprsunset.conf" = {
+    source = ./config/hyprsunset.conf;
+    force = true;
+  };
 }

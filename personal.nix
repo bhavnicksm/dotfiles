@@ -111,7 +111,7 @@ in
   services.tailscale.enable = true;
 
   # Allow only clearly-flagged unfree packages we intentionally use.
-  nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [ "spotify" "cursor" ];
+  nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [ "spotify" "cursor" "google-chrome" ];
 
   # Keep `opencode` on the latest (nixpkgs-unstable) instead of the 26.05
   # branch's broken 1.15.10 (its DB migration fails against our 1.18.x data
