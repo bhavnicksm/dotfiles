@@ -56,12 +56,15 @@ Go + IPC, but both avoid giant monoliths that trap the user in a modal loop.
 
 ## Our conventions (this repo)
 
-All scripts live in `bin/` and are installed to `~/.local/bin` via `home.nix`.
+The bluetooth scripts moved upstream: they live in **bnixos `flakes/bblue`**
+and are installed to `~/.local/bin` by the `bblue` home-manager module
+(`inputs.bnixos.homeModules.bblue`, wired in `home.nix`). This repo's `bin/`
+now holds only dev tools (`hl-mock.lua`, not installed).
 
 ### Script layout
 
 ```
-bin/
+bnixos flakes/bblue/bin/
 ├── bt-menu.sh        # thin bl-select menu, dispatches to the below
 ├── bt-power.sh       # bt-power.sh on|off|toggle|is-on   (omarchy-bluetooth-power)
 ├── bt-device.sh      # bt-device.sh pair|connect|disconnect|forget <mac>

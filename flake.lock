@@ -38,6 +38,25 @@
         "bnixos"
       ]
     },
+    "bblue": {
+      "inputs": {
+        "nixpkgs": [
+          "bnixos",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "path": "./flakes/bblue",
+        "type": "path"
+      },
+      "original": {
+        "path": "./flakes/bblue",
+        "type": "path"
+      },
+      "parent": [
+        "bnixos"
+      ]
+    },
     "bipc": {
       "inputs": {
         "nixpkgs": [
@@ -80,6 +99,7 @@
       "inputs": {
         "bbar": "bbar",
         "bbinds": "bbinds",
+        "bblue": "bblue",
         "bipc": "bipc",
         "blaunch": "blaunch",
         "bnixvim": "bnixvim",
@@ -89,16 +109,16 @@
         "nixpkgs": "nixpkgs"
       },
       "locked": {
-        "lastModified": 1787629515,
-        "narHash": "sha256-3GBSRCogQg05nK7QOsl/F0GJuDz1j+pJnU3T2GqVBC4=",
-        "ref": "bnixvim/plugins",
-        "rev": "5391a48340d026d954d240ff17f9456e0c4d5189",
-        "revCount": 95,
+        "lastModified": 1787691137,
+        "narHash": "sha256-yQfCdo1qvp8eSkajkMQlzSWNpOsb9ys3iW7ZXhUBzwQ=",
+        "ref": "bblue/tui",
+        "rev": "5b5f0d34d37700688942f371c3bc8a69b2713c81",
+        "revCount": 96,
         "type": "git",
         "url": "ssh://git@github.com/bhavnicksm/bnixos.git"
       },
       "original": {
-        "ref": "bnixvim/plugins",
+        "ref": "bblue/tui",
         "type": "git",
         "url": "ssh://git@github.com/bhavnicksm/bnixos.git"
       }

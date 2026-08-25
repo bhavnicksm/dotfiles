@@ -7,6 +7,7 @@
     inputs.bnixos.homeModules.bbar
     inputs.bnixos.homeModules.blaunch
     inputs.bnixos.homeModules.bipc
+    inputs.bnixos.homeModules.bblue
     inputs.bnixos.homeModules.bbinds
     inputs.bnixos.homeModules.bnotif
     inputs.bnixos.homeModules.bnixvim
@@ -29,6 +30,9 @@
     syntaxHighlighting.enable = true;
     historySubstringSearch.enable = true;
     autosuggestion.enable = true;
+    shellAliases = {
+      oc = "opencode";
+    };
     # Export EVERY sops secret as a per-shell env var (initContent runs on
     # every .zshrc source, so new secrets picked up without logout — unlike
     # home.sessionVariables whose hm-session-vars.sh once-guard goes stale).
@@ -191,6 +195,22 @@
         # (HYPRCURSOR_*/XCURSOR_*). The module's systemd activation hook is
         # generated automatically.
 
+        # Window rules. The bbar Bluetooth widget launches bluetui inside a
+        # ghostty tagged with app_id bblue-tui (see bnixos flakes/bblue +
+        # flakes/bbar/qml/Bluetooth.qml); float it as a centered utility
+        # popup.
+        window_rule = [
+          {
+            match.class = "^(bblue-tui)$";
+            float = true;
+          }
+          {
+            match.class = "^(bblue-tui)$";
+            size = "62% 62%";
+            center = true;
+          }
+        ];
+
         # Keybindings for Hyprland — inherited from bbinds (bnixos
         # flakes/bbinds): the single place that defines WM keybindings. The
         # defaults live in `keybinds.bind` there; this machine's tweaks are
@@ -265,6 +285,13 @@
 
   # The shared Quickshell IPC client (b-ipc) bl-launch/bl-select prefer.
   bipc.enable = true;
+
+  # Bluetooth is bblue (bnixos flakes/bblue) — the bt-* scripts at
+  # ~/.local/bin ($mod B menu), the persistent bt-agent pairing service, and
+  # bluetui, which the bbar Bluetooth widget opens in a floating ghostty
+  # (class bblue-tui; floated by the windowrule in the hyprland settings).
+  bblue.enable = true;
+  bblue.tui.enable = true;
 
   # The editor is bnixvim (bnixos flakes/bnixvim) — nixvim-based, themed
   # from the active palette via themes/theme-module.nix. It owns
@@ -398,14 +425,5 @@
     # not pick the keyring and Cursor shows "An OS keyring couldn't be
     # identified for storing the encryption related data".
     ".config/Cursor/argv.json".text = builtins.toJSON { password-store = "gnome-libsecret"; };
-
-    ".local/bin/bt-menu.sh".source = ./bin/bt-menu.sh;
-    ".local/bin/bt-menu.sh".executable = true;
-    ".local/bin/bt-power.sh".source = ./bin/bt-power.sh;
-    ".local/bin/bt-power.sh".executable = true;
-    ".local/bin/bt-device.sh".source = ./bin/bt-device.sh;
-    ".local/bin/bt-device.sh".executable = true;
-    ".local/bin/bt-scan.sh".source = ./bin/bt-scan.sh;
-    ".local/bin/bt-scan.sh".executable = true;
   };
 }

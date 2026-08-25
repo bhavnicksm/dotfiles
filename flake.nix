@@ -8,7 +8,7 @@
     # (bnixvim component) — drop the ?ref= once that merges to main.
     # (bnixvim plugins round: completions/telescope/oil/treesitter) — drop the
     # ?ref= once bnixvim/plugins merges to main.
-    bnixos.url = "git+ssh://git@github.com/bhavnicksm/bnixos.git?ref=bnixvim/plugins";
+    bnixos.url = "git+ssh://git@github.com/bhavnicksm/bnixos.git?ref=bblue/tui";
     nixpkgs.follows = "bnixos/nixpkgs";
     nixos-hardware.follows = "bnixos/nixos-hardware";
     home-manager.follows = "bnixos/home-manager";

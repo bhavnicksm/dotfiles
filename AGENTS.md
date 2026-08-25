@@ -17,7 +17,8 @@ the private `bnixos` product flake over SSH and layers personal config on top:
 - `config.nix` — static, theme-independent dotfiles under `config/`.
 - `themes/` — palette catalog `palettes.nix`, the `themes.theme` option
   (theme-module.nix), and `templates/*.tpl` rendered at build time.
-- `bin/` — helper scripts installed to `~/.local/bin` by `home.nix`.
+- `bin/` — dev-only helpers (`hl-mock.lua`); the user-facing scripts moved
+  upstream to bnixos `flakes/bblue` (installed by the `bblue` HM module).
 - `docs/` — notes explaining the design decisions.
 
 ## Build / switch
@@ -34,7 +35,7 @@ excluded**). If `home.nix` references a new script that was never `git add`ed,
 the build fails with:
 
 ```
-error: path '/nix/store/...-source/bin/bt-device.sh' does not exist
+error: path '/nix/store/...-source/bin/some-new-script.sh' does not exist
 ```
 
 Fix: `git add <new files>` (staging is enough; no commit needed) and rebuild.
@@ -82,14 +83,10 @@ HM 26.05 owns `~/.config/nvim/init.lua` through `programs.neovim.initLua`
 that file; declare config in `home.nix`. The old hand-written copy is at
 `~/.config/nvim/init.lua.old-bak` until you're satisfied and delete it.
 
-## Script conventions (`bin/`)
+## Script conventions (bnixos `flakes/bblue`)
 
-Installed via `home.nix`:
-
-```nix
-home.file.".local/bin/bt-device.sh".source = ./bin/bt-device.sh;
-home.file.".local/bin/bt-device.sh".executable = true;
-```
+The bluetooth scripts live upstream now (`bnixos flakes/bblue/bin/`, installed
+to `~/.local/bin` by the `bblue` module — same paths as when they lived here):
 
 - **Single-purpose commands** (`bt-power.sh`, `bt-device.sh`, `bt-scan.sh`):
   explicit args, hard validation (MAC regex), answer with exit codes, no UI.
@@ -105,10 +102,13 @@ home.file.".local/bin/bt-device.sh".executable = true;
   `#!/bin/bash` for NixOS PATH portability) — see `docs/launchers-and-scripts.md`.
 - Every `bluetoothctl` call wrapped in `timeout`. Bluetooth power is
   rfkill-aware and probes all controllers, modeled on Omarchy.
-- The Bluetooth stack: `hardware.bluetooth.enable` + `powerOnBoot` in
-  `personal.nix` (kernel + bluetoothd), `bluez` in `home.packages` so
-  `bluetoothctl` is on PATH. `rfkill` works as the user — `/dev/rfkill` has
-  a uaccess ACL.
+- The Bluetooth stack: `hardware.bluetooth.enable` + `powerOnBoot` +
+  `settings.General.Pairable` ship from bnixos `configuration.nix`; `bblue`
+  installs the scripts, `bluez-tools` (bt-agent), a persistent
+  `bt-agent -c NoInputNoOutput` user service, and bluetui. Discovery is held
+  by one long-lived `bluetoothctl` client per scan window (BlueZ cancels
+  discovery when the requesting client exits). `rfkill` works as the user —
+  `/dev/rfkill` has a uaccess ACL.
 
 ## Hyprland config (Lua)
 
@@ -131,8 +131,8 @@ home.file.".local/bin/bt-device.sh".executable = true;
 ## Verification
 
 ```sh
-bash -n bin/*.sh
-nix shell nixpkgs#shellcheck -c shellcheck bin/*.sh
+bash -n ~/Projects/bnixos/flakes/bblue/bin/*.sh
+nix shell nixpkgs#shellcheck -c shellcheck ~/Projects/bnixos/flakes/bblue/bin/*.sh
 nix-instantiate --parse home.nix     # syntax check without flake eval
 ~/.local/bin/bt-power.sh is-on; echo $?   # exit-contract smoke test
 ```
