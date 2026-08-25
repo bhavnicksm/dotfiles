@@ -32,6 +32,21 @@
     autosuggestion.enable = true;
     shellAliases = {
       oc = "opencode";
+      # Workflow
+      lg = "lazygit";
+      # ~/dotfiles is the canonical symlink to this repo
+      nrb = "sudo nixos-rebuild switch --flake ~/dotfiles#dotfiles";
+      sec = "sops ~/Projects/dotfiles/secrets.yaml";
+      ncl = "sudo nix-collect-garbage -d";
+      # Git
+      gs = "git status -sb";
+      gd = "git diff";
+      gl = "git log --oneline --graph --decorate";
+      # QoL
+      cat = "bat";
+      ports = "ss -tulpn";
+      dfh = "df -h";
+      freeh = "free -h";
     };
     # Export EVERY sops secret as a per-shell env var (initContent runs on
     # every .zshrc source, so new secrets picked up without logout — unlike
