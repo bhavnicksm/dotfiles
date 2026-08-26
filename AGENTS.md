@@ -144,9 +144,9 @@ to `~/.local/bin` by the `bblue` module — same paths as when they lived here):
 - `$mod SPACE` → `bl-launch` (toggles the blaunch app menu; on PATH via
   `inputs.bnixos.homeModules.blaunch`'s `home.packages`, not `~/.local/bin`)
 - `$mod B` → bluetui in a floating ghostty (bbinds default `bluetooth` bind; class `bblue-tui`)
-- `$mod I` → wifitui in a floating ghostty (home.nix `keybinds.override` `wifi-tui`;
-  class `bwifi-tui`, floated by the windowrule in home.nix hyprland settings; also
-  `wt` zsh alias, package in `home.packages`)
+- `$mod I` → wifitui in a floating ghostty (bbinds default `wifi-tui` bind;
+  class `bwifi-tui`, floated by windowrules bbinds ships itself; `wt`
+  zsh alias from bshell, package in bnixos `packages.core`)
 - Universal binds (home.nix `keybinds.override`, class-branching Lua functions
   rendered from the `terminalClasses`/`windowCommands` data there):
   - `$mod T` → new tab: terminals get Ctrl+Shift+T, everything else Ctrl+T

@@ -135,7 +135,7 @@ from the `bipc` flake).
 |---|---|---|
 | `$mod SPACE` | `bl-launch` (ON PATH via the blaunch flake) | `home.nix` `wayland.windowManager.hyprland` bind |
 | `$mod B` | bluetui in a floating ghostty (`bblue-tui`; bbinds default) | bnixos `flakes/bbinds` |
-| `$mod I` | wifitui in a floating ghostty (`bwifi-tui`) | `home.nix` `keybinds.override` |
+| `$mod I` | wifitui in a floating ghostty (`bwifi-tui`; bbinds default) | bnixos `flakes/bbinds` |
 
 ### Testing changes
 
