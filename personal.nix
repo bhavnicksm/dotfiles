@@ -2,7 +2,7 @@
 
 let
   palettes = import ./themes/palettes.nix;
-  activeTheme = config.home-manager.users.bhavnick.themes.theme or "white";
+  activeTheme = config.home-manager.users.bhavnick.btheme.name or "white";
   palette = palettes.${activeTheme};
 
   # Replace {{ token }} placeholders in a template file.
@@ -47,9 +47,6 @@ in
   # (enable/powerOnBoot/Pairable). The user-space half is the bblue module
   # (bnixos flakes/bblue) wired in home.nix: bt-* scripts, bt-agent service,
   # bluetui TUI.
-
-  # NixOS-level zsh support (PATH for the login shell)
-  programs.zsh.enable = true;
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.bhavnick = {
@@ -108,8 +105,9 @@ in
   # Tailscale mesh VPN daemon
   services.tailscale.enable = true;
 
-  # Allow only clearly-flagged unfree packages we intentionally use.
-  nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [ "spotify" "cursor" "google-chrome" ];
+  # Unfree apps we intentionally use, layered onto bnixos's own allowance
+  # (the product allows its default browser; see bnixos configuration.nix).
+  bnixos.packages.allowUnfree = [ "spotify" "cursor" ];
 
   # Keep `opencode` on the latest (nixpkgs-unstable) instead of the 26.05
   # branch's broken 1.15.10 (its DB migration fails against our 1.18.x data
@@ -119,10 +117,6 @@ in
       opencode = inputs.nixpkgs-unstable.legacyPackages.${pkgs.stdenv.hostPlatform.system}.opencode;
     })
   ];
-
-  # Greeter + plymouth render JetBrains Mono (user-level HM fonts are not
-  # visible to processes running as root/sddm).
-  fonts.packages = [ pkgs.nerd-fonts.jetbrains-mono ];
 
   # Home-manager: personal configuration, packages, and services
   imports = [

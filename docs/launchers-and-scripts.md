@@ -73,7 +73,7 @@ bnixos flakes/bblue/bin/
 
 `launcher.sh` and `theme-selector.sh` are gone. The app menu is now **blaunch**
 (bnixos `flakes/blaunch`, a Quickshell panel) and the theme selector was
-retired — switching themes is declarative (edit `themes.theme` in `home.nix`,
+retired — switching themes is declarative (edit `btheme.name` in `home.nix`,
 `nixos-rebuild switch`).
 
 Rules:
