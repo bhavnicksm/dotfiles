@@ -56,8 +56,8 @@ then re-run the generation's `activate` (or `nixos-rebuild switch`).
 The **default desktop ships with bnixos**, not here: `bnixos.packages.core`
 (bnixos `packages.nix`) installs the whole stack — shell + Hyprland stack
 (dunst, hyprpaper, hyprlock, hypridle, hyprpicker, grim, slurp,
-cliphist, wl-clipboard, btop, bluez), secrets (libsecret, gnome-keyring,
-age, sops), the JetBrains Mono font, and the browser via
+cliphist, wl-clipboard, btop, bluez, wifitui), secrets (libsecret,
+gnome-keyring, age, sops), the JetBrains Mono font, and the browser via
 `bnixos.packages.browser`. There is no fuzzel/wofi — app search and dmenu
 prompts come from the **blaunch** Quickshell launcher (`inputs.bnixos.homeModules.blaunch`).
 
@@ -73,7 +73,8 @@ prompts come from the **blaunch** Quickshell launcher (`inputs.bnixos.homeModule
   lazygit + ghostty static defaults + generic aliases) is upstream too:
   `bnixos.homeModules.bshell`, enabled in home.nix. Its tools ship in
   `bnixos.packages.core`. Personal aliases (`nrb`, `sec`, `ncl`) merge over
-  bshell's set via `programs.zsh.shellAliases` here.
+  bshell's set via `programs.zsh.shellAliases` here (bshell provides
+  e.g. `wt` → wifitui).
 - Night light is `bnixos.homeModules.bnight` (hyprsunset unit + schedule).
 - To change what ships by default, edit bnixos `packages.nix`, NOT
   `home.nix`. To add a machine-only package, add it to `home.packages`.
@@ -153,6 +154,9 @@ to `~/.local/bin` by the `bblue` module — same paths as when they lived here):
   - `$mod N` → new window: strict class→command map (ghostty/thunar/
     google-chrome/...); unmapped classes no-op
   - `$mod SHIFT+N` → bnotif DND toggle (moved off `$mod N`)
+- DND indicator: bbar's `Dnd` widget (bnixos `flakes/bbar`) shows a bell-off
+  glyph in the bar while DND is on (state watched from
+  `~/.local/state/bnotif/dnd`), and left-click toggles DND via `b-ipc`.
 
 ## Verification
 
