@@ -134,7 +134,7 @@ from the `bipc` flake).
 | Key | Action | Source |
 |---|---|---|
 | `$mod SPACE` | `bl-launch` (ON PATH via the blaunch flake) | `home.nix` `wayland.windowManager.hyprland` bind |
-| `$mod B` | `~/.local/bin/bt-menu.sh` | same |
+| `$mod B` | bluetui in a floating ghostty (`bblue-tui`; bbinds default) | bnixos `flakes/bbinds` |
 
 ### Testing changes
 

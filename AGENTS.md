@@ -143,7 +143,7 @@ to `~/.local/bin` by the `bblue` module — same paths as when they lived here):
 
 - `$mod SPACE` → `bl-launch` (toggles the blaunch app menu; on PATH via
   `inputs.bnixos.homeModules.blaunch`'s `home.packages`, not `~/.local/bin`)
-- `$mod B` → `~/.local/bin/bt-menu.sh`
+- `$mod B` → bluetui in a floating ghostty (bbinds default `bluetooth` bind; class `bblue-tui`)
 
 ## Verification
 

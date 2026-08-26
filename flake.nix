@@ -4,7 +4,7 @@
   inputs = {
     # Private repo: fetch over SSH so flakes can authenticate. Follows the
     # default branch (main); feature branches get an explicit ?ref= during
-    # development, dropped once merged.
+    # development and drop it once merged.
     bnixos.url = "git+ssh://git@github.com/bhavnicksm/bnixos.git";
     nixpkgs.follows = "bnixos/nixpkgs";
     nixos-hardware.follows = "bnixos/nixos-hardware";

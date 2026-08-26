@@ -131,7 +131,9 @@
   keybinds.enable = true;
   # Machine-specific overrides on the bnixos defaults:
   keybinds.override.browser = { key = "P"; exec = "${lib.getExe browser} --new-window"; }; # bnixos.packages.browser
-  keybinds.override.menu = { key = "B"; exec = "~/.local/bin/bt-menu.sh"; }; # bt scripts
+  # ($mod B needs no override: bbinds' default `bluetooth` bind opens
+  # bluetui in a class-tagged floating ghostty — same popup as the bbar
+  # Bluetooth widget.)
 
   systemd.user.services = {
     # Scoped to hyprland-session.target (started by Hyprland's own activation
@@ -172,9 +174,11 @@
   bipc.enable = true;
 
   # Bluetooth is bblue (bnixos flakes/bblue) — the bt-* scripts at
-  # ~/.local/bin ($mod B menu), the persistent bt-agent pairing service, and
-  # bluetui, which the bbar Bluetooth widget opens in a floating ghostty
-  # (class bblue-tui; floated by windowrules the module ships itself).
+  # ~/.local/bin (bt-menu.sh is manual-only; $mod B opens bluetui via the
+  # bbinds default `bluetooth` bind), the persistent bt-agent pairing
+  # service, and bluetui, which both that bind and the bbar Bluetooth
+  # widget open in a floating ghostty (class bblue-tui; floated by
+  # windowrules the module ships itself).
   bblue.enable = true;
   bblue.tui.enable = true;
 
