@@ -2,6 +2,10 @@
   "nodes": {
     "bbar": {
       "inputs": {
+        "btheme": [
+          "bnixos",
+          "btheme"
+        ],
         "nixpkgs": [
           "bnixos",
           "nixpkgs"
@@ -78,6 +82,10 @@
     },
     "blaunch": {
       "inputs": {
+        "btheme": [
+          "bnixos",
+          "btheme"
+        ],
         "nixpkgs": [
           "bnixos",
           "nixpkgs"
@@ -95,6 +103,25 @@
         "bnixos"
       ]
     },
+    "bnight": {
+      "inputs": {
+        "nixpkgs": [
+          "bnixos",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "path": "./flakes/bnight",
+        "type": "path"
+      },
+      "original": {
+        "path": "./flakes/bnight",
+        "type": "path"
+      },
+      "parent": [
+        "bnixos"
+      ]
+    },
     "bnixos": {
       "inputs": {
         "bbar": "bbar",
@@ -102,29 +129,35 @@
         "bblue": "bblue",
         "bipc": "bipc",
         "blaunch": "blaunch",
+        "bnight": "bnight",
         "bnixvim": "bnixvim",
         "bnotif": "bnotif",
+        "bshell": "bshell",
+        "btheme": "btheme",
         "home-manager": "home-manager",
         "nixos-hardware": "nixos-hardware",
         "nixpkgs": "nixpkgs"
       },
       "locked": {
-        "lastModified": 1787691137,
-        "narHash": "sha256-yQfCdo1qvp8eSkajkMQlzSWNpOsb9ys3iW7ZXhUBzwQ=",
-        "ref": "bblue/tui",
-        "rev": "5b5f0d34d37700688942f371c3bc8a69b2713c81",
-        "revCount": 96,
+        "lastModified": 1787706513,
+        "narHash": "sha256-ZQBO7JE0Si1NUitQyWboLzUC0D/9rkzeqiXIATxOsgA=",
+        "ref": "refs/heads/main",
+        "rev": "80bfb9e708577c180e491d708b04043156221f64",
+        "revCount": 102,
         "type": "git",
         "url": "ssh://git@github.com/bhavnicksm/bnixos.git"
       },
       "original": {
-        "ref": "bblue/tui",
         "type": "git",
         "url": "ssh://git@github.com/bhavnicksm/bnixos.git"
       }
     },
     "bnixvim": {
       "inputs": {
+        "btheme": [
+          "bnixos",
+          "btheme"
+        ],
         "nixpkgs": [
           "bnixos",
           "nixpkgs"
@@ -145,6 +178,10 @@
     },
     "bnotif": {
       "inputs": {
+        "btheme": [
+          "bnixos",
+          "btheme"
+        ],
         "nixpkgs": [
           "bnixos",
           "nixpkgs"
@@ -156,6 +193,44 @@
       },
       "original": {
         "path": "./flakes/bnotif",
+        "type": "path"
+      },
+      "parent": [
+        "bnixos"
+      ]
+    },
+    "bshell": {
+      "inputs": {
+        "nixpkgs": [
+          "bnixos",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "path": "./flakes/bshell",
+        "type": "path"
+      },
+      "original": {
+        "path": "./flakes/bshell",
+        "type": "path"
+      },
+      "parent": [
+        "bnixos"
+      ]
+    },
+    "btheme": {
+      "inputs": {
+        "nixpkgs": [
+          "bnixos",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "path": "./flakes/btheme",
+        "type": "path"
+      },
+      "original": {
+        "path": "./flakes/btheme",
         "type": "path"
       },
       "parent": [

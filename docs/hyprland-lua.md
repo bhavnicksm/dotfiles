@@ -43,7 +43,7 @@ call in `hyprland.lua`:
 
 Color arguments (e.g. `general.col.active_border`) are Lua **`"rgba(r,g,b,a)"`**
 strings — the old comma-less `rgb(XXXXXX)` hyprlang form is invalid in Lua.
-`themes/theme-module.nix` uses `hexToRgba` for these.
+bnixos `flakes/btheme` uses `hexToRgba` for these (colors now rendered upstream).
 
 ## Autostart
 

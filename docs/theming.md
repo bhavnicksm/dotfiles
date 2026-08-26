@@ -31,20 +31,24 @@ cyan = "#3e3e3e" blue = "#1a1a1a"    magenta = "#2e2e2e"
 
 ## This flake's model
 
-- `themes/palettes.nix` — the palette catalog. Keys mirror Omarchy's
-  `colors.toml` semantics (`mode`, `accent`, `selection`, `muted`,
-  `background`, `foreground`, semantic colors, `bright_*`).
-- `themes/theme-module.nix` — the home-manager module. It exposes the single
-  `themes.theme` option (an enum over the palette keys) and renders every
-  consumer from the selected palette.
-- `themes/templates/*.tpl` — template files with `{{ key }}` placeholders,
-  the direct analog of Omarchy's `default/themed/*.tpl`.
+- `themes/palettes.nix` — the palette catalog (consumer-owned colors).
+  Keys mirror Omarchy's `colors.toml` semantics (`mode`, `accent`,
+  `selection`, `muted`, `background`, `foreground`, semantic colors,
+  `bright_*`). Optional extras per theme: `wallpaper` (file name in
+  `wallpapers/`, resolved to a store path by home.nix) and `starship`
+  (prompt segment colors; without it btheme falls back to a monochrome-safe
+  mapping of the Omarchy keys).
+- bnixos `flakes/btheme` — the theming engine itself, upstream since the
+  btheme migration. It exposes `btheme.themes` (the catalog) +
+  `btheme.name`, and renders every themed surface: ghostty, btop, hyprlock,
+  hyprpaper, opencode, gtk, starship colors, hyprland borders + desktop
+  look defaults. Templates live upstream (`flakes/btheme/templates/`).
 
 ### Selecting a theme
 
 ```nix
 # home.nix
-themes.theme = "white";   # "white" | "gruvbox-light" (or any key in palettes.nix)
+btheme.name = "white";   # any key in themes/palettes.nix
 ```
 
 then:
@@ -60,38 +64,37 @@ declarative (edit that one line, rebuild).
 
 | App | Source | Palette keys used |
 |-----|--------|-------------------|
-| Waybar → **bbar** | bnixos `flakes/bbar` (Quickshell bar) via `bbar.palette` | `background`, `foreground`, `accent`, `muted`, `selection`, `red`, `yellow`, `green` |
-| Hyprland | `home-manager` `wayland.windowManager.hyprland` | `foreground` → active border, `muted` → inactive border |
-| Ghostty | `programs.ghostty.themes.<name>` | `background`, `foreground`, `cursor`, `selection`, 16-color ANSI palette |
-| btop | `~/.config/btop/themes/<name>.theme` + `btop/btop.conf` (tpl) | all semantic colors |
-| GTK | `gtk.theme` | `mode` → `Adwaita` (light) / `Adwaita-dark` |
+| bbar / blaunch / bnotif | bnixos `flakes/b*` reading `config.btheme.palette` | `background`, `foreground`, `accent`, `muted`, `selection`, `red`, `yellow`, `green` |
+| bnixvim | bnixos `flakes/bnixvim` reading `config.btheme.palette` | the 7 above + `blue`, `cyan`, `magenta` |
+| Hyprland | btheme → `wayland.windowManager.hyprland.settings` | `foreground` → active border, `muted` → inactive border (+ look defaults) |
+| Ghostty | btheme → `programs.ghostty.themes.<name>` | `background`, `foreground`, `cursor`, `selection`, 16-color ANSI palette |
+| Starship | btheme → `programs.starship.settings.palettes.<name>` | `starship` extra or structural fallback |
+| btop | btheme → `~/.config/btop/themes/<name>.theme` + `btop/btop.conf` | all semantic colors |
+| hyprlock / hyprpaper | btheme templates (needs `wallpaper` on the palette) | background/accent/red/green/foreground + wallpaper |
+| GTK | btheme → `gtk.theme` | `mode` → `Adwaita` (light) / `Adwaita-dark` |
 
 ## Adding a theme
 
 1. Add a block to `themes/palettes.nix` following Omarchy's key names. A
    minimal entry needs at least `mode`, `background`, `foreground`, `accent`,
    `muted`, `selection`, and the semantic colors your apps reference.
-2. The `themes.theme` option automatically becomes an enum over the new key
-   (it's built from `builtins.attrNames palettes`).
-3. `home-manager switch` and select it.
+2. Optionally add `wallpaper` and `starship` extras (see above).
+3. Set `btheme.name = "<key>";` in home.nix and rebuild.
 
 Because the palette keys are shared, one new palette themes every app at once.
 
 ## Customizing generated output
 
-The `themes/templates/` files are the only hand-written CSS/config in the
-pipeline:
-
-- `btop.theme.tpl` — btop theme file.
-- `btop.conf.tpl` — btop options; only `color_theme` is templated.
-
-The status bar is **not** themed here: it's bnixos's `bbar`, a Quickshell bar
-whose `bbar.palette` we fill from the active palette (one line per color in
-`theme-module.nix`). The launcher `blaunch` takes the same 7-color subset via
-`blaunch.palette`. Edit the launcher/bar engines in bnixos, not here.
+The templates moved upstream with btheme — they live in
+`bnixos flakes/btheme/templates/` (`btop.theme.tpl`, `btop.conf.tpl`,
+`hyprlock.conf.tpl`, `hyprpaper.conf.tpl`). The bar/launcher/notification
+engines are also upstream (`flakes/bbar`, `flakes/blaunch`,
+`flakes/bnotif`), themed from `config.btheme.palette`. Edit those in
+bnixos, not here.
 
 Static, theme-independent config stays under `config/` and is wired through
-`config.nix` (currently `gtk-3.0`, `pavucontrol.ini`, `starship.toml`).
+`config.nix` (currently `gtk-3.0` bookmarks, `pavucontrol.ini`;
+`starship.toml` holds layout/format only — its colors come from btheme).
 
 ## Relationship to nix-colors
 

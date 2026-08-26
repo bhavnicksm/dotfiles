@@ -10,13 +10,16 @@ the private `bnixos` product flake over SSH and layers personal config on top:
 - `flake.nix` — inputs (`bnixos` via `git+ssh`, `nixpkgs`/`home-manager`
   follow it, `sops-nix`), the single system config.
 - `personal.nix` — machine identity (hostname `bnixos`, TZ, user
-  `bhavnick`), SDDM theme, and the **home-manager wiring**
-  (`home-manager.users.bhavnick = import ./home.nix`).
-- `home.nix` — user config: shell, hyprland (keybinds), bbar (status bar),
-  themes, secrets, and the `home.file` block that installs `bin/` scripts.
+  `bhavnick`), SDDM theme, unfree app allowance, and the **home-manager
+  wiring** (`home-manager.users.bhavnick = import ./home.nix`).
+- `home.nix` — user config: theme selection (`btheme.name` + catalog),
+  personal zsh aliases, sops secrets, keybind overrides, hyprpaper unit,
+  and the b*/bshell/bnight enables. The default desktop (look, shell,
+  CLI tools, ghostty defaults) ships upstream now.
 - `config.nix` — static, theme-independent dotfiles under `config/`.
-- `themes/` — palette catalog `palettes.nix`, the `themes.theme` option
-  (theme-module.nix), and `templates/*.tpl` rendered at build time.
+- `themes/` — palette catalog `palettes.nix` (+ per-theme `starship`/
+  `wallpaper` extras) and the SDDM greeter template. The theming engine
+  itself is upstream: bnixos `flakes/btheme`.
 - `bin/` — dev-only helpers (`hl-mock.lua`); the user-facing scripts moved
   upstream to bnixos `flakes/bblue` (installed by the `bblue` HM module).
 - `docs/` — notes explaining the design decisions.
@@ -59,21 +62,35 @@ age, sops), the JetBrains Mono font, and the browser via
 prompts come from the **blaunch** Quickshell launcher (`inputs.bnixos.homeModules.blaunch`).
 
 - `home.nix` `home.packages` holds only **personal extras not in core**
-  (spotify, code-cursor-fhs, pywal).
-- The browser is bnixos's default (Chromium) via `bnixos.packages.core` —
-  no firefox. Override it only by setting `bnixos.packages.browser` in
-  `personal.nix`.
+  (spotify, code-cursor-fhs, pywal, nil, python312, uv).
+- The browser is bnixos's default (Google Chrome) via
+  `bnixos.packages.core` — no firefox. Override it only by setting
+  `bnixos.packages.browser` in `personal.nix`. Unfree allowances: the
+  product allows its default browser; personal unfree apps go in
+  `bnixos.packages.allowUnfree` (personal.nix) — never override the
+  predicate wholesale.
+- The shell experience (zsh/starship/fzf/eza/zoxide/yazi/bat/ripgrep/
+  lazygit + ghostty static defaults + generic aliases) is upstream too:
+  `bnixos.homeModules.bshell`, enabled in home.nix. Its tools ship in
+  `bnixos.packages.core`. Personal aliases (`nrb`, `sec`, `ncl`) merge over
+  bshell's set via `programs.zsh.shellAliases` here.
+- Night light is `bnixos.homeModules.bnight` (hyprsunset unit + schedule).
 - To change what ships by default, edit bnixos `packages.nix`, NOT
   `home.nix`. To add a machine-only package, add it to `home.packages`.
 
 ## Theme model
 
-- One line in `home.nix`: `themes.theme = "white";` — an enum over the keys of
-  `themes/palettes.nix` (themselves Omarchy-style semantic palettes).
-- `themes/theme-module.nix` renders every consumer (hyprland borders, ghostty,
-  bbar palette, btop) from the selected palette via `templates/*.tpl`.
-- Switching themes is declarative: edit the `themes.theme = "…";` line in
-  `home.nix` and rebuild (the old `bin/theme-selector.sh` is retired).
+- One line in `home.nix`: `btheme.name = "white";` — a key of the
+  consumer-owned catalog `themes/palettes.nix`, fed to upstream via
+  `btheme.themes` (wallpapers resolved to store paths in home.nix).
+- bnixos `flakes/btheme` owns the renderer: ghostty, btop, hyprlock,
+  hyprpaper, opencode, gtk, starship colors, hyprland borders, and the
+  Hyprland desktop look defaults (gaps/rounding/shadows/animations/splash —
+  mkDefault'd, override declaratively from home.nix).
+- Themed components (bbar/blaunch/bnotif/bnixvim) read
+  `config.btheme.palette`; they have no palette options anymore.
+- Switching themes is declarative: edit the `btheme.name = "…";` line in
+  `home.nix` and rebuild.
 - See `docs/theming.md`.
 
 ## Neovim
@@ -126,7 +143,7 @@ to `~/.local/bin` by the `bblue` module — same paths as when they lived here):
 
 - `$mod SPACE` → `bl-launch` (toggles the blaunch app menu; on PATH via
   `inputs.bnixos.homeModules.blaunch`'s `home.packages`, not `~/.local/bin`)
-- `$mod B` → `~/.local/bin/bt-menu.sh`
+- `$mod B` → bluetui in a floating ghostty (bbinds default `bluetooth` bind; class `bblue-tui`)
 
 ## Verification
 
@@ -221,7 +238,7 @@ Given 26.05 froze some tools at broken versions, for any suspect package:
 ### hyprpaper ≥ 0.8 (hyprtoolkit rewrite)
 
 Config format broke: no `preload`, no `wallpaper = monitor,path` one-liner.
-Use anonymous blocks (config lives in `themes/templates/hyprpaper.conf.tpl`):
+Use anonymous blocks (config template lives upstream in bnixos `flakes/btheme/templates/hyprpaper.conf.tpl`):
 ```ini
 wallpaper {
     monitor =        # empty = fallback for all monitors
@@ -259,4 +276,4 @@ environment. See `docs/sops-session-vars.md`.
 ## Nix style
 
 Two-space indent, double-quoted attrs, one option per line; follow the
-`themes.theme`/`home.file` patterns above rather than inventing new ones.
+`btheme.name`/`home.file` patterns above rather than inventing new ones.

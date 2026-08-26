@@ -1,6 +1,8 @@
-# Starship prompt — Gruvbox Rainbow (powerline) preset, recolored to Flexoki light.
-# Powerline layout from https://starship.rs/presets/gruvbox-rainbow with the
-# Flexoki light palette (#FFFCF0 bg, #100F0F ink) to match the terminal theme.
+# Starship prompt — Gruvbox Rainbow (powerline) layout.
+# Colors are NOT set here: btheme (bnixos flakes/btheme) supplies
+# settings.palette + settings.palettes.<name> from the active theme, so the
+# prompt follows the system theme. Segment styles below reference the role
+# names btheme defines (color_orange, color_yellow, ...).
 # Requires a Nerd Font (JetBrainsMono Nerd Font is installed).
 
 scan_timeout = 10
@@ -37,23 +39,10 @@ $pixi\
 $cmd_duration\
 [](fg:color_bg3 bg:color_bg1)\
 $time\
-[ ](fg:color_bg1)\
+[ ](fg:color_bg1)\
 $line_break$character"""
 
-palette = 'flexoki_light'
-
-[palettes.flexoki_light]
-color_fg0 = '#100F0F'
-color_bg1 = '#F2F0E5'
-color_bg3 = '#DAD8CE'
-color_blue = '#4385BE'
-color_aqua = '#24837B'
-color_green = '#879A39'
-color_orange = '#DA702C'
-color_purple = '#8B7EC8'
-color_red = '#D14D41'
-color_yellow = '#D0A215'
-
+# Directory substitutions are personal (paths on this machine).
 [os]
 disabled = false
 style = "bg:color_orange fg:color_fg0"

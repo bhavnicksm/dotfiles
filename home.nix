@@ -3,7 +3,9 @@
 {
   imports = [
     inputs.sops-nix.homeManagerModules.sops
-    ./themes/theme-module.nix
+    inputs.bnixos.homeModules.btheme
+    inputs.bnixos.homeModules.bshell
+    inputs.bnixos.homeModules.bnight
     inputs.bnixos.homeModules.bbar
     inputs.bnixos.homeModules.blaunch
     inputs.bnixos.homeModules.bipc
@@ -17,102 +19,43 @@
   home.homeDirectory = "/home/bhavnick";
   home.stateVersion = "26.05";
 
-  # Declarative theme (Omarchy-style). Options are the keys of
-  # themes/palettes.nix: "white" | "gruvbox-light". Switch by editing this
-  # one line and running `home-manager switch`. See docs/theming.md.
-  themes.theme = "white";
+  # Declarative theme (Omarchy-style). The color catalog lives in
+  # themes/palettes.nix; wallpapers are resolved to store paths here — the
+  # btheme contract wants absolute/store-path strings. Switch themes by
+  # editing btheme.name and rebuilding. See docs/theming.md.
+  btheme.name = "white";
+  btheme.themes =
+    builtins.mapAttrs (_: p:
+      p // (lib.optionalAttrs ((p ? wallpaper) && (p.wallpaper != null)) {
+        wallpaper = "${./wallpapers}/${p.wallpaper}";
+      })
+    ) (import ./themes/palettes.nix);
 
-  # Manage zsh + starship as the default shell.
-  programs.zsh = {
-    enable = true;
-    defaultKeymap = "emacs";
-    enableCompletion = true;
-    syntaxHighlighting.enable = true;
-    historySubstringSearch.enable = true;
-    autosuggestion.enable = true;
-    shellAliases = {
-      oc = "opencode";
-      # Workflow
-      lg = "lazygit";
-      # ~/dotfiles is the canonical symlink to this repo
-      nrb = "sudo nixos-rebuild switch --flake ~/dotfiles#dotfiles";
-      sec = "sops ~/Projects/dotfiles/secrets.yaml";
-      ncl = "sudo nix-collect-garbage -d";
-      # Git
-      gs = "git status -sb";
-      gd = "git diff";
-      gl = "git log --oneline --graph --decorate";
-      # QoL
-      cat = "bat";
-      ports = "ss -tulpn";
-      dfh = "df -h";
-      freeh = "free -h";
-    };
-    # Export EVERY sops secret as a per-shell env var (initContent runs on
-    # every .zshrc source, so new secrets picked up without logout — unlike
-    # home.sessionVariables whose hm-session-vars.sh once-guard goes stale).
-    initContent =
-      let
-        exports = lib.mapAttrsToList (name: _:
-          "export ${name}=\"\$(cat ${config.sops.secrets.${name}.path})\""
-        ) config.sops.secrets;
-      in
-      lib.concatStringsSep "\n" exports;
+  # The shell experience (zsh + starship + CLI tools + ghostty defaults)
+  # ships with bnixos via bshell; only personal/workflow aliases live here.
+  bshell.enable = true;
+  programs.zsh.shellAliases = {
+    # ~/dotfiles is the canonical symlink to this repo
+    nrb = "sudo nixos-rebuild switch --flake ~/dotfiles#dotfiles";
+    sec = "sops ~/Projects/dotfiles/secrets.yaml";
+    ncl = "sudo nix-collect-garbage -d";
   };
 
-  # Fuzzy finder: Ctrl+R history menu, Ctrl+T files, Alt+C cd
-  programs.fzf = {
-    enable = true;
-    enableZshIntegration = true;
-  };
+  # Prompt layout/format (Gruvbox Rainbow powerline preset). Colors are NOT
+  # in this TOML: btheme supplies settings.palette + settings.palettes.<name>
+  # so the prompt follows the active theme.
+  programs.starship.settings = builtins.fromTOML (builtins.readFile ./config/starship.toml);
 
-  # Modern ls (eza) with icons and git status
-  programs.eza = {
-    enable = true;
-    enableZshIntegration = true;
-    icons = "auto";
-    git = true;
-    extraOptions = [ "--group-directories-first" ];
-  };
-
-  # Smart cd: replace cd with zoxide (fuzzy match, falls back to real cd)
-  programs.zoxide = {
-    enable = true;
-    enableZshIntegration = true;
-    options = [ "--cmd cd" ];
-  };
-
-  # Terminal file manager
-  programs.yazi = {
-    enable = true;
-    enableZshIntegration = true;
-  };
-
-  # Syntax-highlighted pager for man/cat
-  programs.bat = {
-    enable = true;
-    config = {
-      theme = "ansi"; # Follows the terminal palette (flexoki-light)
-      pager = "less -FR";
-    };
-  };
-
-  # Fast content search: rg <pattern> (also backs fzf's Ctrl+T)
-  programs.ripgrep = {
-    enable = true;
-    arguments = [ "--smart-case" ];
-  };
-
-  # Interactive TUI for git operations
-  programs.lazygit = {
-    enable = true;
-  };
-
-  # The authoritative prompt config lives at config/starship.toml.
-  programs.starship = {
-    enable = true;
-    settings = builtins.fromTOML (builtins.readFile ./config/starship.toml);
-  };
+  # Export EVERY sops secret as a per-shell env var (initContent runs on
+  # every .zshrc source, so new secrets picked up without logout — unlike
+  # home.sessionVariables whose hm-session-vars.sh once-guard goes stale).
+  programs.zsh.initContent =
+    let
+      exports = lib.mapAttrsToList (name: _:
+        "export ${name}=\"\$(cat ${config.sops.secrets.${name}.path})\""
+      ) config.sops.secrets;
+    in
+    lib.concatStringsSep "\n" exports;
 
   # Sops secrets
   sops = {
@@ -121,7 +64,7 @@
     # Auto-declare every secret: top-level keys of secrets.yaml are
     # plaintext even in the encrypted file, so parse them at eval time.
     # Each key becomes `sops.secrets.<name> = { };` and is exported as an
-    # env var per-shell via programs.zsh.initExtra below (NOT
+    # env var per-shell via programs.zsh.initContent above (NOT
     # home.sessionVariables — HM's hm-session-vars.sh once-guard makes
     # sessionVariables stale for any secret added after login).
     secrets =
@@ -138,7 +81,8 @@
       lib.genAttrs topLevelKeys (_: { });
   };
 
-  # Setting the cursor theme to use
+  # Setting the cursor theme to use (personal choice, deliberately not a
+  # bnixos default).
   home.pointerCursor = {
     gtk.enable = true;
     package = pkgs.bibata-cursors;
@@ -152,6 +96,11 @@
   # `settings` below use the 26.05 Lua generator: each attr becomes an
   # `hl.<name>(…)` call; `_var` makes a Lua local; `_args` are the args
   # (mkLuaInline = raw Lua). See docs/hyprland-lua.md.
+  #
+  # Everything else is owned upstream now:
+  #   - desktop look defaults (gaps/borders/rounding/shadows/animations/
+  #     splash) + themed border colors → btheme (bnixos flakes/btheme)
+  #   - window rules for the floating bblue-tui → bblue
   wayland.windowManager.hyprland = {
     enable = true;
     configType = "lua";
@@ -160,76 +109,15 @@
         # The bind list + modifier are owned by the bbinds home module
         # (inputs.bnixos.homeModules.bbinds): keybinds.hyprlandBind is the
         # rendered [ { _args = [...] } ] list, keybinds.hyprlandModifier the
-        # `local mod` splice. Inherit the bnixos defaults and override
-        # declaratively in the `keybinds` block further down.
+        # `local mod` splice.
       in
       {
         # Basic Settings: `local mod = "SUPER"` (was `$mod`). Comes from
         # bbinds so there is exactly one place to set the modifier.
         mod = config.keybinds.hyprlandModifier;
 
-        # Plain config options (general/decoration/animations) go through a
-        # single `hl.config({ … })` call — there is no hl.general/hl.decoration/
-        # hl.animations function in Hyprland's Lua API.
-        config = {
-          general = {
-            gaps_in = 3;      # Gap between windows (default is 5)
-            gaps_out = 6;     # Gap between windows and screen edge (default is 20)
-            border_size = 2;  # Window border thickness (default is 1)
-            # "col.active_border" / "col.inactive_border" come from the active
-            # theme via themes/theme-module.nix (Lua "rgba(r,g,b,a)" format).
-          };
-
-          # Square window corners (matches blaunch's rounding = 0 so the
-          # launcher's selection border reads like a focused window).
-          decoration = {
-            rounding = 0;
-            # No drop shadows (omarchy style): the launcher card and windows
-            # render flat, relying on their 2px borders alone.
-            shadow = {
-              enabled = false;
-            };
-          };
-
-          # Setting the animations to false for now
-          animations = {
-            enabled = false;
-          };
-
-          # No default wallpaper/splash flash while hyprpaper loads: full
-          # black background until the themed wallpaper is live.
-          misc = {
-            background_color = "0x000000";
-            disable_splash_rendering = true;
-          };
-        };
-
-        # No autostart hook: bbar/bnotif/hyprpaper are systemd.user.services,
-        # gnome-keyring is system-owned (NixOS module: PAM auto_start + D-Bus
-        # activation), and the cursor theme via home.sessionVariables
-        # (HYPRCURSOR_*/XCURSOR_*). The module's systemd activation hook is
-        # generated automatically.
-
-        # Window rules. The bbar Bluetooth widget launches bluetui inside a
-        # ghostty tagged with app_id bblue-tui (see bnixos flakes/bblue +
-        # flakes/bbar/qml/Bluetooth.qml); float it as a centered utility
-        # popup.
-        window_rule = [
-          {
-            match.class = "^(bblue-tui)$";
-            float = true;
-          }
-          {
-            match.class = "^(bblue-tui)$";
-            size = "62% 62%";
-            center = true;
-          }
-        ];
-
-        # Keybindings for Hyprland — inherited from bbinds (bnixos
-        # flakes/bbinds): the single place that defines WM keybindings. The
-        # defaults live in `keybinds.bind` there; this machine's tweaks are
-        # in the `keybinds` block in this file.
+        # Keybindings — inherited from bbinds; this machine's tweaks are in
+        # the `keybinds.override` block below.
         bind = config.keybinds.hyprlandBind;
       };
   };
@@ -243,15 +131,16 @@
   keybinds.enable = true;
   # Machine-specific overrides on the bnixos defaults:
   keybinds.override.browser = { key = "P"; exec = "${lib.getExe browser} --new-window"; }; # bnixos.packages.browser
-  keybinds.override.menu = { key = "B"; exec = "~/.local/bin/bt-menu.sh"; }; # bt scripts
+  # ($mod B needs no override: bbinds' default `bluetooth` bind opens
+  # bluetui in a class-tagged floating ghostty — same popup as the bbar
+  # Bluetooth widget.)
+
   systemd.user.services = {
     # Scoped to hyprland-session.target (started by Hyprland's own activation
     # hook AFTER dbus-update-activation-environment sets the Wayland env).
     # NOTE: do NOT add After=hydration here — After=hyprland-session.target
     # combined with this WantedBy created a systemd ordering cycle that
     # deleted every start job (bbar/hyprpaper never launched).
-    # dunst is gone: notifications are bnotif (bnixos flakes/bnotif), which
-    # owns its own quickshell-based server via its own systemd service.
 
     hyprpaper = {
       Unit = {
@@ -264,60 +153,48 @@
       };
       Install = { WantedBy = [ "hyprland-session.target" ]; };
     };
-
-    hyprsunset = {
-      Unit = {
-        Description = "Hyprland blue light filter (night light)";
-        PartOf = [ "hyprland-session.target" ];
-      };
-      Service = {
-        ExecStart = "${pkgs.hyprsunset}/bin/hyprsunset";
-        Restart = "on-failure";
-      };
-      Install = { WantedBy = [ "hyprland-session.target" ]; };
-    };
   };
 
-  # The status bar is bbar (bnixos flakes/bbar) — a Quickshell desktop bar.
-  # Waybar is deliberately gone: the bar is owned by bnixos so there is one
-  # place to edit it. The palette is wired from the active theme in
-  # themes/theme-module.nix; bbar runs via its own systemd.user.services.bbar.
+  # The status bar is bbar (bnixos flakes/bbar) — a Quickshell desktop bar,
+  # themed from the active palette via btheme. Runs via its own
+  # systemd.user.services.bbar.
   bbar.enable = true;
 
   # The launcher is blaunch (bnixos flakes/blaunch) — a Quickshell app menu.
-  # It takes over both the fuzzel app search ($mod SPACE → bl-launch) and the
-  # `--dmenu` prompts scripts used (bt-menu.sh → bl-select). The palette is
-  # wired from the active theme in themes/theme-module.nix; it runs via its
-  # own systemd.user.services.blaunch.
+  # It takes over both the app search ($mod SPACE → bl-launch) and the dmenu
+  # prompts (`bl-select`). Themed by btheme; runs via its own service.
   blaunch.enable = true;
 
   # Notifications are bnotif (bnixos flakes/bnotif) — a Quickshell freedesktop
   # notification server with themed toasts, persistent DND ($mod+N), and the
-  # UPower battery watcher. Replaces dunst. The palette is wired from the
-  # active theme in themes/theme-module.nix; it runs via its own
-  # systemd.user.services.bnotif.
+  # UPower battery watcher. Replaces dunst. Themed by btheme.
   bnotif.enable = true;
 
   # The shared Quickshell IPC client (b-ipc) bl-launch/bl-select prefer.
   bipc.enable = true;
 
   # Bluetooth is bblue (bnixos flakes/bblue) — the bt-* scripts at
-  # ~/.local/bin ($mod B menu), the persistent bt-agent pairing service, and
-  # bluetui, which the bbar Bluetooth widget opens in a floating ghostty
-  # (class bblue-tui; floated by the windowrule in the hyprland settings).
+  # ~/.local/bin (bt-menu.sh is manual-only; $mod B opens bluetui via the
+  # bbinds default `bluetooth` bind), the persistent bt-agent pairing
+  # service, and bluetui, which both that bind and the bbar Bluetooth
+  # widget open in a floating ghostty (class bblue-tui; floated by
+  # windowrules the module ships itself).
   bblue.enable = true;
   bblue.tui.enable = true;
 
+  # Night light is bnight (bnixos flakes/bnight) — hyprsunset with a systemd
+  # user unit and the default schedule (identity by day, warm from 19:00).
+  bnight.enable = true;
+
   # The editor is bnixvim (bnixos flakes/bnixvim) — nixvim-based, themed
-  # from the active palette via themes/theme-module.nix. It owns
-  # ~/.config/nvim; the old HM programs.neovim block is retired.
+  # from the active palette via btheme. It owns ~/.config/nvim.
   bnixvim.enable = true;
 
   # The home.packages option allows you to install Nix packages into your
   # environment. The full default desktop (shell, Hyprland stack, secrets,
-  # font, browser) ships via bnixos.packages.core — see bnixos/packages.nix.
-  # Keep here only packages that are personal to this machine and not part of
-  # the bnixos core set (unfree/individual apps, extra pywal tooling).
+  # font, browser, CLI tools) ships via bnixos.packages.core — see
+  # bnixos/packages.nix. Keep here only packages that are personal to this
+  # machine and not part of the bnixos core set.
   home.packages = with pkgs; [
     # Utility for dynamic theme colors, driven by the active theme.
     pywal
@@ -326,9 +203,6 @@
     spotify
     code-cursor-fhs
 
-    # Blue light filter (night light) for Hyprland. Requires hyprland >= 0.45.
-    hyprsunset
-
     # Nix language server (opencode lsp)
     nil
 
@@ -336,61 +210,14 @@
     python312
     uv
   ];
-  
+
   # Setting the font
   fonts.fontconfig.enable = true;
 
-  # Terminal emulator: Ghostty themed from themes/palettes.nix via
-  # themes/theme-module.nix (theme = programs.ghostty.themes.<theme>).
-  programs.ghostty = {
-    enable = true;
-    settings = {
-      font-family = "JetBrainsMono Nerd Font";
-      font-size = 10;
-      gtk-custom-css = "~/.config/ghostty/compact-tabs.css";
-      keybind = [
-        "ctrl+shift+h=new_split:left"
-        "ctrl+shift+j=new_split:down"
-        "ctrl+shift+k=new_split:up"
-        "ctrl+shift+l=new_split:right"
-        "ctrl+shift+p=write_screen_file:paste"
-        "alt+h=goto_split:left"
-        "alt+j=goto_split:down"
-        "alt+k=goto_split:up"
-        "alt+l=goto_split:right"
-      ];
-    };
-  };
-
-  # Compact Ghostty tab bar (requires gtk-custom-css above)
-  home.file.".config/ghostty/compact-tabs.css".text = ''
-    tabbar tabbox {
-      min-height: 18px;
-      padding-top: 1px;
-      padding-bottom: 1px;
-    }
-
-    tabbar tab {
-      min-height: 14px;
-      padding: 0;
-    }
-
-    tabbar tab label,
-    tabbar .start-action label,
-    tabbar .end-action label {
-      font-size: 9px;
-    }
-
-    tabbar tab button.image-button {
-      min-width: 18px;
-      min-height: 18px;
-    }
-
-    tabbar .start-action,
-    tabbar .end-action {
-      padding: 1px;
-    }
-  '';
+  # Terminal emulator: Ghostty ships with static defaults (font-family,
+  # split keybinds, compact tab CSS) from bshell and colors from btheme.
+  # Only machine-specific tweaks here:
+  programs.ghostty.settings.font-size = 10;
 
   # gnome-keyring is system-owned (bnixos configuration.nix:
   # services.gnome.gnome-keyring.enable): PAM auto_start unlocks the login

@@ -73,7 +73,7 @@ bnixos flakes/bblue/bin/
 
 `launcher.sh` and `theme-selector.sh` are gone. The app menu is now **blaunch**
 (bnixos `flakes/blaunch`, a Quickshell panel) and the theme selector was
-retired — switching themes is declarative (edit `themes.theme` in `home.nix`,
+retired — switching themes is declarative (edit `btheme.name` in `home.nix`,
 `nixos-rebuild switch`).
 
 Rules:
@@ -134,7 +134,7 @@ from the `bipc` flake).
 | Key | Action | Source |
 |---|---|---|
 | `$mod SPACE` | `bl-launch` (ON PATH via the blaunch flake) | `home.nix` `wayland.windowManager.hyprland` bind |
-| `$mod B` | `~/.local/bin/bt-menu.sh` | same |
+| `$mod B` | bluetui in a floating ghostty (`bblue-tui`; bbinds default) | bnixos `flakes/bbinds` |
 
 ### Testing changes
 
