@@ -129,11 +129,85 @@
   #   keybinds.override.<name>     = null;  # drop a default binding
   #   keybinds.override.my-script  = { key = "…"; exec = "…"; }  # add one
   keybinds.enable = true;
-  # Machine-specific overrides on the bnixos defaults:
-  keybinds.override.browser = { key = "P"; exec = "${lib.getExe browser} --new-window"; }; # bnixos.packages.browser
-  # ($mod B needs no override: bbinds' default `bluetooth` bind opens
-  # bluetui in a class-tagged floating ghostty — same popup as the bbar
-  # Bluetooth widget.)
+
+  # Machine-specific overrides on the bnixos defaults ($mod B needs none:
+  # bbinds' default `bluetooth` bind opens bluetui in a class-tagged
+  # floating ghostty — same popup as the bbar Bluetooth widget).
+  #
+  # The universal tab/window binds branch on the focused window's class at
+  # runtime (`hl.get_active_window()`), rendered from the data here so
+  # adopting another app is a one-line change.
+  keybinds.override =
+    let
+      # Terminals speak Ctrl+Shift+T for new-tab — the de-facto Linux
+      # terminal standard (ghostty, kitty, gnome-terminal, konsole,
+      # wezterm); every other GUI app speaks Ctrl+T (browsers, nautilus,
+      # ...). Tab-less apps ignore the forwarded chord either way. Both
+      # ghostty spellings kept: the app_id varies by build.
+      terminalClasses = [
+        "com.mitchellh.ghostty"
+        "ghostty"
+        "kitty"
+        "gnome-terminal-server"
+        "konsole"
+        "wezterm"
+      ];
+      # Chromium-family classes share one browser command. bnixos.packages
+      # .browser resolves to google-chrome here; the chromium spellings are
+      # kept so the map survives a browser swap.
+      browserClasses = [ "google-chrome" "chromium" "Chromium" ];
+      # Class → command for the new-window bind (strict map: an unmapped
+      # class does nothing — most single-instance apps refocus instead of
+      # opening a new window unless invoked with explicit flags).
+      # Thunar is the bnixos default file manager. Keys are window CLASSES
+      # (live-verified via `hyprctl activewindow -j`): ghostty's app_id is
+      # the reverse-DNS form here.
+      windowCommands = {
+        "com.mitchellh.ghostty" = "ghostty";
+        thunar = "thunar --new-window";
+        nautilus = "nautilus --new-window";
+      } // lib.genAttrs browserClasses (_: "${lib.getExe browser} --new-window");
+    in
+    {
+      # bnixos.packages.browser
+      browser = { key = "P"; exec = "${lib.getExe browser} --new-window"; };
+
+      # DND moves off $mod+N (which becomes the universal new-window):
+      # partial override keeps bbinds' bnotif exec.
+      dnd = { key = "N"; shift = true; }; # $mod+SHIFT+N
+
+      # Universal new tab ($mod+T): forward each app family's own chord.
+      tab-new = {
+        key = "T";
+        inline = ''
+          function()
+            local w = hl.get_active_window()
+            local cls = w and w.class or ""
+            local terms = { ${lib.concatStringsSep " " (map (c: ''["${c}"] = true,'') terminalClasses)} }
+            if terms[cls] then
+              hl.dispatch(hl.dsp.send_shortcut({ mods = "CTRL_SHIFT", key = "t" }))
+            else
+              hl.dispatch(hl.dsp.send_shortcut({ mods = "CTRL", key = "t" }))
+            end
+          end
+        '';
+      };
+
+      # Universal new window ($mod+N).
+      window-new = {
+        key = "N";
+        inline = ''
+          function()
+            local w = hl.get_active_window()
+            local cmds = { ${lib.concatStringsSep " " (lib.mapAttrsToList (c: cmd: ''["${c}"] = ${builtins.toJSON cmd},'') windowCommands)} }
+            local cmd = w and cmds[w.class]
+            if cmd then
+              hl.dispatch(hl.dsp.exec_cmd(cmd))
+            end
+          end
+        '';
+      };
+    };
 
   systemd.user.services = {
     # Scoped to hyprland-session.target (started by Hyprland's own activation
@@ -166,8 +240,8 @@
   blaunch.enable = true;
 
   # Notifications are bnotif (bnixos flakes/bnotif) — a Quickshell freedesktop
-  # notification server with themed toasts, persistent DND ($mod+N), and the
-  # UPower battery watcher. Replaces dunst. Themed by btheme.
+  # notification server with themed toasts, persistent DND ($mod+SHIFT+N),
+  # and the UPower battery watcher. Replaces dunst. Themed by btheme.
   bnotif.enable = true;
 
   # The shared Quickshell IPC client (b-ipc) bl-launch/bl-select prefer.

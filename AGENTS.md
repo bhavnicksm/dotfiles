@@ -144,6 +144,12 @@ to `~/.local/bin` by the `bblue` module — same paths as when they lived here):
 - `$mod SPACE` → `bl-launch` (toggles the blaunch app menu; on PATH via
   `inputs.bnixos.homeModules.blaunch`'s `home.packages`, not `~/.local/bin`)
 - `$mod B` → bluetui in a floating ghostty (bbinds default `bluetooth` bind; class `bblue-tui`)
+- Universal binds (home.nix `keybinds.override`, class-branching Lua functions
+  rendered from the `terminalClasses`/`windowCommands` data there):
+  - `$mod T` → new tab: terminals get Ctrl+Shift+T, everything else Ctrl+T
+  - `$mod N` → new window: strict class→command map (ghostty/thunar/
+    google-chrome/...); unmapped classes no-op
+  - `$mod SHIFT+N` → bnotif DND toggle (moved off `$mod N`)
 
 ## Verification
 
