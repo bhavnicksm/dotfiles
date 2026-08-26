@@ -39,6 +39,7 @@
     nrb = "sudo nixos-rebuild switch --flake ~/dotfiles#dotfiles";
     sec = "sops ~/Projects/dotfiles/secrets.yaml";
     ncl = "sudo nix-collect-garbage -d";
+    wt = "wifitui";
   };
 
   # Prompt layout/format (Gruvbox Rainbow powerline preset). Colors are NOT
@@ -119,6 +120,22 @@
         # Keybindings — inherited from bbinds; this machine's tweaks are in
         # the `keybinds.override` block below.
         bind = config.keybinds.hyprlandBind;
+
+        # Machine-added floating TUI popup: the wifi-tui bind ($mod+I) opens
+        # wifitui in a ghostty tagged `bwifi-tui`; mirror the bblue-tui rules
+        # (bblue ships those upstream for bluetui). List options concatenate,
+        # so this merges with bblue's rules.
+        window_rule = [
+          {
+            match.class = "^(bwifi-tui)$";
+            float = true;
+          }
+          {
+            match.class = "^(bwifi-tui)$";
+            size = "62% 62%";
+            center = true;
+          }
+        ];
       };
   };
 
@@ -171,6 +188,14 @@
     {
       # bnixos.packages.browser
       browser = { key = "P"; exec = "${lib.getExe browser} --new-window"; };
+
+      # WiFi TUI (pairs with the bbinds default `bluetooth` bind): wifitui
+      # in a class-tagged terminal so the windowrule below floats/centers
+      # it — same popup treatment as bblue-tui. $mod+W is taken (close).
+      wifi-tui = {
+        key = "I";
+        exec = "${config.keybinds.terminalCommand} --class=bwifi-tui -e wifitui";
+      };
 
       # DND moves off $mod+N (which becomes the universal new-window):
       # partial override keeps bbinds' bnotif exec.
@@ -283,6 +308,9 @@
     # Python + uv for ML/dev workspaces (silver-searcher, gym/dirth)
     python312
     uv
+
+    # WiFi TUI (NetworkManager D-Bus; $mod+I / `wt` alias)
+    wifitui
   ];
 
   # Setting the font
