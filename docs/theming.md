@@ -71,7 +71,7 @@ declarative (edit that one line, rebuild).
 | Starship | btheme → `programs.starship.settings.palettes.<name>` | `starship` extra or structural fallback |
 | btop | btheme → `~/.config/btop/themes/<name>.theme` + `btop/btop.conf` | all semantic colors |
 | hyprlock / hyprpaper | btheme templates (needs `wallpaper` on the palette) | background/accent/red/green/foreground + wallpaper |
-| GTK | btheme → `gtk.theme` | `mode` → `Adwaita` (light) / `Adwaita-dark` |
+| GTK | btheme → `gtk.theme` + `gtk-{3,4}.0/gtk.css` | `mode` → `Adwaita` (light) / `Adwaita-dark`; `selection`/`foreground` recolor selections, `accent` recolors accent widgets (thunar, pavucontrol, loupe, ...) |
 
 ## Adding a theme
 
@@ -87,7 +87,8 @@ Because the palette keys are shared, one new palette themes every app at once.
 
 The templates moved upstream with btheme — they live in
 `bnixos flakes/btheme/templates/` (`btop.theme.tpl`, `btop.conf.tpl`,
-`hyprlock.conf.tpl`, `hyprpaper.conf.tpl`). The bar/launcher/notification
+`hyprlock.conf.tpl`, `hyprpaper.conf.tpl`, `gtk3.css.tpl`, `gtk4.css.tpl`).
+The bar/launcher/notification
 engines are also upstream (`flakes/bbar`, `flakes/blaunch`,
 `flakes/bnotif`), themed from `config.btheme.palette`. Edit those in
 bnixos, not here.
