@@ -134,24 +134,13 @@
   # need none: bbinds defaults open bluetui/wifitui in class-tagged
   # floating ghostty popups — same treatment for both TUIs).
   #
-  # The universal tab/window binds branch on the focused window's class at
-  # runtime (`hl.get_active_window()`), rendered from the data here so
+  # Universal tab-close ($mod+W) ships as a bbinds default now: it
+  # branches on the classes in `keybinds.terminals` (upstream). The
+  # remaining universal binds below branch on the focused window's class
+  # at runtime (`hl.get_active_window()`), rendered from the data here so
   # adopting another app is a one-line change.
   keybinds.override =
     let
-      # Terminals speak Ctrl+Shift+T for new-tab — the de-facto Linux
-      # terminal standard (ghostty, kitty, gnome-terminal, konsole,
-      # wezterm); every other GUI app speaks Ctrl+T (browsers, nautilus,
-      # ...). Tab-less apps ignore the forwarded chord either way. Both
-      # ghostty spellings kept: the app_id varies by build.
-      terminalClasses = [
-        "com.mitchellh.ghostty"
-        "ghostty"
-        "kitty"
-        "gnome-terminal-server"
-        "konsole"
-        "wezterm"
-      ];
       # Chromium-family classes share one browser command. bnixos.packages
       # .browser resolves to google-chrome here; the chromium spellings are
       # kept so the map survives a browser swap.
@@ -176,14 +165,15 @@
       # partial override keeps bbinds' bnotif exec.
       dnd = { key = "N"; shift = true; }; # $mod+SHIFT+N
 
-      # Universal new tab ($mod+T): forward each app family's own chord.
+      # Universal new tab ($mod+T): forward each app family's own chord;
+      # terminal classes come from bbinds' `keybinds.terminals`.
       tab-new = {
         key = "T";
         inline = ''
           function()
             local w = hl.get_active_window()
             local cls = w and w.class or ""
-            local terms = { ${lib.concatStringsSep " " (map (c: ''["${c}"] = true,'') terminalClasses)} }
+            local terms = { ${lib.concatStringsSep " " (map (c: ''["${c}"] = true,'') config.keybinds.terminals)} }
             if terms[cls] then
               hl.dispatch(hl.dsp.send_shortcut({ mods = "CTRL_SHIFT", key = "t" }))
             else

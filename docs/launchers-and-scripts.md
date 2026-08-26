@@ -136,6 +136,9 @@ from the `bipc` flake).
 | `$mod SPACE` | `bl-launch` (ON PATH via the blaunch flake) | `home.nix` `wayland.windowManager.hyprland` bind |
 | `$mod B` | bluetui in a floating ghostty (`bblue-tui`; bbinds default) | bnixos `flakes/bbinds` |
 | `$mod I` | wifitui in a floating ghostty (`bwifi-tui`; bbinds default) | bnixos `flakes/bbinds` |
+| `$mod Q` | close focused window | bnixos `flakes/bbinds` |
+| `$mod W` | universal tab-close (Ctrl+Shift+W in terminals per `keybinds.terminals`, Ctrl+W elsewhere) | bnixos `flakes/bbinds` |
+| `$mod T` / `$mod N` | universal new tab / new window (class-branching) | `home.nix` `keybinds.override` |
 
 ### Testing changes
 

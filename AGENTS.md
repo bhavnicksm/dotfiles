@@ -148,12 +148,14 @@ to `~/.local/bin` by the `bblue` module — same paths as when they lived here):
 - `$mod I` → wifitui in a floating ghostty (bbinds default `wifi-tui` bind;
   class `bwifi-tui`, floated by windowrules bbinds ships itself; `wt`
   zsh alias from bshell, package in bnixos `packages.core`)
-- Universal binds (home.nix `keybinds.override`, class-branching Lua functions
-  rendered from the `terminalClasses`/`windowCommands` data there):
-  - `$mod T` → new tab: terminals get Ctrl+Shift+T, everything else Ctrl+T
-  - `$mod N` → new window: strict class→command map (ghostty/thunar/
-    google-chrome/...); unmapped classes no-op
-  - `$mod SHIFT+N` → bnotif DND toggle (moved off `$mod N`)
+- Universal binds: `$mod T` → new tab and `$mod N` → new window live in
+  home.nix `keybinds.override` (class-branching Lua rendered from the
+  `windowCommands` data there; terminal classes come from bbinds'
+  `keybinds.terminals`), plus `$mod SHIFT+N` → bnotif DND toggle (moved
+  off `$mod N`; `$mod N` is a strict class→command map, unmapped classes
+  no-op). Universal tab-close ships upstream as a bbinds default:
+  `$mod W` (same `keybinds.terminals` branch); window close moved to
+  `$mod Q`.
 - DND indicator: bbar's `Dnd` widget (bnixos `flakes/bbar`) shows a bell-off
   glyph in the bar while DND is on (state watched from
   `~/.local/state/bnotif/dnd`), and left-click toggles DND via `b-ipc`.
