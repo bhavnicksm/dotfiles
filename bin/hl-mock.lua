@@ -29,6 +29,12 @@ for _, k in ipairs({
   "force_renderer_reload", "global", "layout", "no_op", "pass", "send_key_state",
   "send_shortcut", "submap",
 }) do dsp[k] = fn end
+-- The real stub raises "hl.send_shortcut: 'mods' is required" at runtime
+-- when the table omits `mods` (empty string "" is fine). Mirror that here
+-- so bind Lua missing the field fails in the load test, not on screen.
+dsp.send_shortcut = function(args)
+  assert(args.mods ~= nil, "hl.send_shortcut: 'mods' is required")
+end
 dsp.cursor = nsCursor
 dsp.group = nsGroup
 dsp.window = nsWindow
