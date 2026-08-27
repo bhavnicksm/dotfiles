@@ -158,6 +158,7 @@ to `~/.local/bin` by the `bblue` module — same paths as when they lived here):
   `$mod C`/`$mod V` (Ctrl+Shift+C/V in terminals, Ctrl+C/V elsewhere —
   the old toggle-float on `$mod V` was removed) and delete-line
   `$mod BackSpace` (Ctrl+E→Ctrl+U readline kill in terminals,
+  End→Shift+Home→BackSpace in Chrome via bbinds' `keybinds.browsers`,
   Ctrl+Shift+K elsewhere); window close moved to `$mod Q`.
 - DND indicator: bbar's `Dnd` widget (bnixos `flakes/bbar`) shows a bell-off
   glyph in the bar while DND is on (state watched from
