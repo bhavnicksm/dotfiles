@@ -138,6 +138,7 @@ from the `bipc` flake).
 | `$mod I` | wifitui in a floating ghostty (`bwifi-tui`; bbinds default) | bnixos `flakes/bbinds` |
 | `$mod Q` | close focused window | bnixos `flakes/bbinds` |
 | `$mod W` | universal tab-close (Ctrl+Shift+W in terminals per `keybinds.terminals`, Ctrl+W elsewhere) | bnixos `flakes/bbinds` |
+| `$mod C` / `$mod V` | universal copy / paste (Ctrl+Shift+C/V in terminals per `keybinds.terminals`, Ctrl+C/V elsewhere) | bnixos `flakes/bbinds` |
 | `$mod T` / `$mod N` | universal new tab / new window (class-branching) | `home.nix` `keybinds.override` |
 
 ### Testing changes

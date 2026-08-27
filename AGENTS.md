@@ -154,7 +154,9 @@ to `~/.local/bin` by the `bblue` module — same paths as when they lived here):
   `keybinds.terminals`), plus `$mod SHIFT+N` → bnotif DND toggle (moved
   off `$mod N`; `$mod N` is a strict class→command map, unmapped classes
   no-op). Universal tab-close ships upstream as a bbinds default:
-  `$mod W` (same `keybinds.terminals` branch); window close moved to
+  `$mod W` (same `keybinds.terminals` branch); so do universal copy/paste
+  `$mod C`/`$mod V` (Ctrl+Shift+C/V in terminals, Ctrl+C/V elsewhere —
+  the old toggle-float on `$mod V` was removed); window close moved to
   `$mod Q`.
 - DND indicator: bbar's `Dnd` widget (bnixos `flakes/bbar`) shows a bell-off
   glyph in the bar while DND is on (state watched from
