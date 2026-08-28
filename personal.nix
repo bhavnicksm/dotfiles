@@ -107,7 +107,7 @@ in
 
   # Unfree apps we intentionally use, layered onto bnixos's own allowance
   # (the product allows its default browser; see bnixos configuration.nix).
-  bnixos.packages.allowUnfree = [ "spotify" "cursor" ];
+  bnixos.packages.allowUnfree = [ "spotify" "cursor" "typora" ];
 
   # Keep `opencode` on the latest (nixpkgs-unstable) instead of the 26.05
   # branch's broken 1.15.10 (its DB migration fails against our 1.18.x data

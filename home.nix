@@ -266,6 +266,12 @@
     # Desktop applications (unfree / personal)
     spotify
     code-cursor-fhs
+    typora
+
+    # Terminal markdown: glow (TUI browser) + mdcat (Ghostty-native
+    # image/math/mermaid rendering when a file needs more than alt text).
+    glow
+    mdcat
 
     # Nix language server (opencode lsp)
     nil
