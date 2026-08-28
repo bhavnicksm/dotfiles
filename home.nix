@@ -268,9 +268,8 @@
     code-cursor-fhs
     typora
 
-    # Terminal markdown: glow (TUI browser) + mdcat (Ghostty-native
-    # image/math/mermaid rendering when a file needs more than alt text).
-    glow
+    # Terminal markdown: mdcat renders images/math/mermaid via Ghostty's
+    # native image protocol, and can live-preview with --watch.
     mdcat
 
     # Nix language server (opencode lsp)
