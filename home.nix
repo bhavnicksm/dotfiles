@@ -131,6 +131,18 @@
         # Keybindings — inherited from bbinds; this machine's tweaks are in
         # the `keybinds.override` block below.
         bind = config.keybinds.hyprlandBind;
+
+        # Typora runs under XWayland and its popup menus render as windows
+        # with the same class, so the global blur (btheme's decoration
+        # defaults) smudges them. Blur is invisible on the opaque main
+        # window anyway, so kill it for the whole class. (Field name is
+        # no_blur — the Lua rule schema underscores the no_* rules.)
+        window_rule = [
+          {
+            match.class = "^(Typora)$";
+            no_blur = true;
+          }
+        ];
       };
   };
 
