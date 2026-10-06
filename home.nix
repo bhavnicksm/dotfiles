@@ -46,6 +46,18 @@
   # so the prompt follows the active theme.
   programs.starship.settings = builtins.fromTOML (builtins.readFile ./config/starship.toml);
 
+  # Portals: the running xdg-desktop-portal resolves its backends from
+  # NIX_XDG_DESKTOP_PORTAL_DIR — the home-manager profile's portals dir
+  # (bnixos registers xdg-desktop-portal-hyprland here, nothing else) — so
+  # system-level extraPortals in personal.nix is NOT enough. Register
+  # xdg-desktop-portal-gtk here or org.freedesktop.portal.FileChooser (and
+  # OpenURI/Settings) never exist, and Electron/GTK apps fall back to
+  # native dialogs (which is what broke Typora's file picker).
+  xdg.portal = {
+    enable = true;
+    extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
+  };
+
   # Export EVERY sops secret as a per-shell env var (initContent runs on
   # every .zshrc source, so new secrets picked up without logout — unlike
   # home.sessionVariables whose hm-session-vars.sh once-guard goes stale).
@@ -266,7 +278,17 @@
     # Desktop applications (unfree / personal)
     spotify
     code-cursor-fhs
-    typora
+
+    # Typora is an unfree Electron app whose GTK3 gsettings schemas live
+    # under gtk3's gsettings-schemas output dir — NOT on XDG_DATA_DIRS —
+    # so its native file-dialog fallback aborts with "Settings schema
+    # 'org.gtk.Settings.FileChooser' is not installed" whenever the portal
+    # FileChooser is unavailable (see xdg.portal in personal.nix for the
+    # primary fix). Wrap it so the schemas always resolve.
+    (pkgs.writeShellScriptBin "typora" ''
+      export XDG_DATA_DIRS="${pkgs.gtk3}/share/gsettings-schemas/${pkgs.gtk3.name}:''${XDG_DATA_DIRS:-$HOME/.nix-profile/share:/run/current-system/sw/share}"
+      exec ${pkgs.typora}/bin/typora "$@"
+    '')
 
     # Terminal markdown: mdcat renders images/math/mermaid via Ghostty's
     # native image protocol, and can live-preview with --watch.

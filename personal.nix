@@ -43,6 +43,27 @@ in
   networking.hostName = "bnixos";
   time.timeZone = "America/Los_Angeles";
 
+  # Bootloader: bnixos no longer ships boot config (machine-specific), so
+  # the host declares its own. Values match the pre-split bnixos defaults
+  # exactly (GRUB on EFI, no os-prober, 15s menu, touch EFI vars).
+  boot.loader = {
+    systemd-boot.enable = false;
+
+    grub = {
+      enable = true;
+      device = "nodev";
+      efiSupport = true;
+      efiInstallAsRemovable = false;
+      useOSProber = false;
+
+      # Limit the number of configurations shown
+      configurationLimit = 10;
+    };
+
+    timeout = 15;
+    efi.canTouchEfiVariables = true;
+  };
+
   # Bluetooth: kernel + bluetoothd now ship from bnixos configuration.nix
   # (enable/powerOnBoot/Pairable). The user-space half is the bblue module
   # (bnixos flakes/bblue) wired in home.nix: bt-* scripts, bt-agent service,
@@ -104,6 +125,16 @@ in
 
   # Tailscale mesh VPN daemon
   services.tailscale.enable = true;
+
+  # xdg-desktop-portal backends. bnixos ships the daemon + the Hyprland
+  # backend, but nothing implements org.freedesktop.portal.FileChooser —
+  # Electron/GTK apps (Typora) then fall back to their native GTK dialog
+  # and can abort. xdg-desktop-portal-gtk provides the desktop-neutral
+  # portal interfaces (FileChooser, Settings, …) for Hyprland sessions.
+  xdg.portal = {
+    enable = true;
+    extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
+  };
 
   # Unfree apps we intentionally use, layered onto bnixos's own allowance
   # (the product allows its default browser; see bnixos configuration.nix).
