@@ -279,16 +279,16 @@
     spotify
     code-cursor-fhs
 
-    # Typora is an unfree Electron app whose GTK3 gsettings schemas live
-    # under gtk3's gsettings-schemas output dir — NOT on XDG_DATA_DIRS —
-    # so its native file-dialog fallback aborts with "Settings schema
-    # 'org.gtk.Settings.FileChooser' is not installed" whenever the portal
-    # FileChooser is unavailable (see xdg.portal in personal.nix for the
-    # primary fix). Wrap it so the schemas always resolve.
-    (pkgs.writeShellScriptBin "typora" ''
-      export XDG_DATA_DIRS="${pkgs.gtk3}/share/gsettings-schemas/${pkgs.gtk3.name}:''${XDG_DATA_DIRS:-$HOME/.nix-profile/share:/run/current-system/sw/share}"
-      exec ${pkgs.typora}/bin/typora "$@"
-    '')
+    # Typora: the FileChooser portal from xdg-desktop-portal-gtk
+    # (personal.nix) is the primary fix for the Electron/GTK file-dialog
+    # schema abort — a wrapper prefixing gtk3's gsettings-schemas dir used
+    # to defend against the native-dialog fallback, but plain is enough
+    # while the portal is in place. Also: a wrapper-only install ships no
+    # typora.desktop, so the app never appeared in blaunch. If the abort
+    # ("Settings schema 'org.gtk.Settings.FileChooser' is not installed")
+    # ever reappears, restore the defense via symlinkJoin + makeWrapper
+    # (keeps the package's .desktop + icons while prefixing the schemas).
+    typora
 
     # Terminal markdown: mdcat renders images/math/mermaid via Ghostty's
     # native image protocol, and can live-preview with --watch.
