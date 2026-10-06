@@ -132,17 +132,14 @@
         # the `keybinds.override` block below.
         bind = config.keybinds.hyprlandBind;
 
-        # Typora runs under XWayland and its popup menus render as windows
-        # with the same class, so the global blur (btheme's decoration
-        # defaults) smudges them. Blur is invisible on the opaque main
-        # window anyway, so kill it for the whole class. (Field name is
-        # no_blur — the Lua rule schema underscores the no_* rules.)
-        window_rule = [
-          {
-            match.class = "^(Typora)$";
-            no_blur = true;
-          }
-        ];
+        # Kill blur globally: it's Hyprland's stock default, not a btheme
+        # choice, and nothing in the stack is translucent — bar, toasts,
+        # launcher, ghostty (incl. the floating TUI popups) are all solid,
+        # hyprlock frosts by dimming, and app windows are opaque. The flat
+        # btheme look (rounding 0, shadows off, animations off) doesn't
+        # want it; its only visible effect was smudging XWayland popup
+        # menus (Typora) and burning GPU cycles per frame.
+        config.decoration.blur.enabled = false;
       };
   };
 
