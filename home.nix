@@ -131,15 +131,6 @@
         # Keybindings — inherited from bbinds; this machine's tweaks are in
         # the `keybinds.override` block below.
         bind = config.keybinds.hyprlandBind;
-
-        # Kill blur globally: it's Hyprland's stock default, not a btheme
-        # choice, and nothing in the stack is translucent — bar, toasts,
-        # launcher, ghostty (incl. the floating TUI popups) are all solid,
-        # hyprlock frosts by dimming, and app windows are opaque. The flat
-        # btheme look (rounding 0, shadows off, animations off) doesn't
-        # want it; its only visible effect was smudging XWayland popup
-        # menus (Typora) and burning GPU cycles per frame.
-        config.decoration.blur.enabled = false;
       };
   };
 
