@@ -163,11 +163,11 @@
         "nixpkgs": "nixpkgs"
       },
       "locked": {
-        "lastModified": 1791348237,
-        "narHash": "sha256-UtqoQ2xIUuNvn5GmrvlhiSWVzzGj9G5dSPbADzKMBoY=",
+        "lastModified": 1791392268,
+        "narHash": "sha256-gvBFVpeAsgdtK1rwjO3EOlzr/EMwNPMJxtC0FZOW9dY=",
         "ref": "bmux/zellij",
-        "rev": "0fc0858f705fa66e8ee7eae37795b72e7ce36066",
-        "revCount": 139,
+        "rev": "168c7e9e04702a58d73760cfc9c05965f62bdb95",
+        "revCount": 140,
         "type": "git",
         "url": "ssh://git@github.com/bhavnicksm/bnixos.git"
       },
