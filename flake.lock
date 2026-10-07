@@ -103,6 +103,29 @@
         "bnixos"
       ]
     },
+    "bmux": {
+      "inputs": {
+        "btheme": [
+          "bnixos",
+          "btheme"
+        ],
+        "nixpkgs": [
+          "bnixos",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "path": "./flakes/bmux",
+        "type": "path"
+      },
+      "original": {
+        "path": "./flakes/bmux",
+        "type": "path"
+      },
+      "parent": [
+        "bnixos"
+      ]
+    },
     "bnight": {
       "inputs": {
         "nixpkgs": [
@@ -129,6 +152,7 @@
         "bblue": "bblue",
         "bipc": "bipc",
         "blaunch": "blaunch",
+        "bmux": "bmux",
         "bnight": "bnight",
         "bnixvim": "bnixvim",
         "bnotif": "bnotif",
@@ -139,15 +163,16 @@
         "nixpkgs": "nixpkgs"
       },
       "locked": {
-        "lastModified": 1791319354,
-        "narHash": "sha256-c13zS2AhTLJ3+zuc6QYYaGy8r756NHfzg8BUhYGOodk=",
-        "ref": "refs/heads/main",
-        "rev": "fe38cf7dcf590b7ceb10ac22a4bd3178ac07746f",
-        "revCount": 136,
+        "lastModified": 1791340435,
+        "narHash": "sha256-y5mAsLJ7NvrpU25P/Y59ok7dB6q7AOZ5ResFs0vtkrQ=",
+        "ref": "bmux/zellij",
+        "rev": "8ffd60bfa76437022130b1185066468e36ddc87a",
+        "revCount": 137,
         "type": "git",
         "url": "ssh://git@github.com/bhavnicksm/bnixos.git"
       },
       "original": {
+        "ref": "bmux/zellij",
         "type": "git",
         "url": "ssh://git@github.com/bhavnicksm/bnixos.git"
       }
