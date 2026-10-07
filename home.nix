@@ -13,6 +13,7 @@
     inputs.bnixos.homeModules.bbinds
     inputs.bnixos.homeModules.bnotif
     inputs.bnixos.homeModules.bnixvim
+    inputs.bnixos.homeModules.bmux
   ];
 
   home.username = "bhavnick";
@@ -40,6 +41,11 @@
     sec = "sops ~/Projects/dotfiles/secrets.yaml";
     ncl = "sudo nix-collect-garbage -d";
   };
+
+  # The zellij multiplexer ships with bnixos via bmux (config.kdl + theme
+  # follow the active btheme theme); entry points are the bshell aliases
+  # zx (plain session) and ocx (fresh session running opencode).
+  bmux.enable = true;
 
   # Prompt layout/format (Gruvbox Rainbow powerline preset). Colors are NOT
   # in this TOML: btheme supplies settings.palette + settings.palettes.<name>

@@ -4,8 +4,9 @@
   inputs = {
     # Private repo: fetch over SSH so flakes can authenticate. Follows the
     # default branch (main); feature branches get an explicit ?ref= during
-    # development and drop it once merged.
-    bnixos.url = "git+ssh://git@github.com/bhavnicksm/bnixos.git";
+    # development and drop it once merged. bmux (zellij) lives on
+    # bmux/zellij until merged.
+    bnixos.url = "git+ssh://git@github.com/bhavnicksm/bnixos.git?ref=bmux/zellij";
     nixpkgs.follows = "bnixos/nixpkgs";
     nixos-hardware.follows = "bnixos/nixos-hardware";
     home-manager.follows = "bnixos/home-manager";
