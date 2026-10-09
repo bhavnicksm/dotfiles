@@ -306,6 +306,10 @@
     # Python + uv for ML/dev workspaces (silver-searcher, gym/dirth)
     python312
     uv
+
+    # Cloudflare Workers deploys (buttons.minha.sh etc.) + npx/npm tooling
+    wrangler
+    nodejs_22
   ];
 
   # Setting the font
