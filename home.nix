@@ -310,6 +310,9 @@
     # Cloudflare Workers deploys (buttons.minha.sh etc.) + npx/npm tooling
     wrangler
     nodejs_22
+
+    # AWS CLI (s3, ec2, sts etc.)
+    awscli2
   ];
 
   # Setting the font
