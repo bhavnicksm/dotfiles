@@ -17,10 +17,17 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # opencode latest, for an overlay pin: the nixos-26.05 branch froze
-    # opencode at 1.15.10 whose DB migration errors against the 1.18.x data
-    # dir. Keep `opencode` on nixpkgs-unstable (1.18.13) via personal.nix.
+    # nixos-26.05 froze opencode at 1.15.10 (DB migration fails against the
+    # 1.18.x data dir) and code-cursor at 3.5.17. opencode is overlaid in
+    # personal.nix; Cursor is taken from this input in home.nix.
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
+
+    # Grok Bot is an unfree .deb. The flake repackages it and already allows
+    # unfree in its package output. Follow unstable, which is what it tests.
+    grok-bot = {
+      url = "github:jordangarrison/grok-bot-flake";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
+    };
   };
 
   outputs = { self, bnixos, nixpkgs, nixos-hardware, home-manager, sops-nix, ... }@inputs: {

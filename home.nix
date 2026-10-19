@@ -1,5 +1,13 @@
 { config, pkgs, inputs, lib, browser, ... }:
 
+let
+  # nixos-26.05 froze code-cursor at 3.5.17. This import follows
+  # nixpkgs-unstable and is only used for the editor below.
+  cursorPkgs = import inputs.nixpkgs-unstable {
+    inherit (pkgs.stdenv.hostPlatform) system;
+    config.allowUnfree = true;
+  };
+in
 {
   imports = [
     inputs.sops-nix.homeManagerModules.sops
@@ -283,7 +291,8 @@
 
     # Desktop applications (unfree / personal)
     spotify
-    code-cursor-fhs
+    cursorPkgs.code-cursor-fhs
+    inputs.grok-bot.packages.${pkgs.stdenv.hostPlatform.system}.default
 
     # Typora: the FileChooser portal from xdg-desktop-portal-gtk
     # (personal.nix) is the primary fix for the Electron/GTK file-dialog

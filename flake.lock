@@ -285,6 +285,26 @@
         "type": "github"
       }
     },
+    "grok-bot": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs-unstable"
+        ]
+      },
+      "locked": {
+        "lastModified": 1792310959,
+        "narHash": "sha256-uNBmDICr1sL/xqfNhIThtuet/1ZayckS4ZNvEDXuiTI=",
+        "owner": "jordangarrison",
+        "repo": "grok-bot-flake",
+        "rev": "747d0333cc9825267acaaaa3d6df94a0fb5aaa75",
+        "type": "github"
+      },
+      "original": {
+        "owner": "jordangarrison",
+        "repo": "grok-bot-flake",
+        "type": "github"
+      }
+    },
     "home-manager": {
       "inputs": {
         "nixpkgs": [
@@ -341,11 +361,11 @@
     },
     "nixpkgs-unstable": {
       "locked": {
-        "lastModified": 1786384358,
-        "narHash": "sha256-RzPPiWeUtuvymnpuEWsdtzli5w4kjZs49FqEs3/1u+I=",
+        "lastModified": 1792094642,
+        "narHash": "sha256-zp8ToDMnqZcu4o4IH9pdwXFXGp7yLm/M0dEnNWnyd7I=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "2fcb964de67fcf60b43471c55d5d99e61a9ccb5a",
+        "rev": "fe13242281a67641c0102cdb1087f0ebe586c7df",
         "type": "github"
       },
       "original": {
@@ -383,6 +403,7 @@
     "root": {
       "inputs": {
         "bnixos": "bnixos",
+        "grok-bot": "grok-bot",
         "home-manager": [
           "bnixos",
           "home-manager"
