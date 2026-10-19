@@ -4,9 +4,8 @@
   inputs = {
     # Private repo: fetch over SSH so flakes can authenticate. Follows the
     # default branch (main); feature branches get an explicit ?ref= during
-    # development and drop it once merged. bmux (zellij) lives on
-    # bmux/zellij until merged.
-    bnixos.url = "git+ssh://git@github.com/bhavnicksm/bnixos.git?ref=bmux/zellij";
+    # development and drop it once merged.
+    bnixos.url = "git+ssh://git@github.com/bhavnicksm/bnixos.git?ref=main";
     nixpkgs.follows = "bnixos/nixpkgs";
     nixos-hardware.follows = "bnixos/nixos-hardware";
     home-manager.follows = "bnixos/home-manager";
@@ -17,9 +16,8 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # nixos-26.05 froze opencode at 1.15.10 (DB migration fails against the
-    # 1.18.x data dir) and code-cursor at 3.5.17. opencode is overlaid in
-    # personal.nix; Cursor is taken from this input in home.nix.
+    # nixos-26.05 froze code-cursor at 3.5.17; Cursor is taken from this
+    # input in home.nix. opencode now comes from bnixos (upstream 2.0).
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
 
     # Grok Bot is an unfree .deb. The flake repackages it and already allows

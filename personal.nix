@@ -140,15 +140,9 @@ in
   # (the product allows its default browser; see bnixos configuration.nix).
   bnixos.packages.allowUnfree = [ "spotify" "cursor" "typora" "grok-bot" ];
 
-  # Keep `opencode` on nixpkgs-unstable instead of the 26.05 branch's
-  # broken 1.15.10 (its DB migration fails against our 1.18.x data dir).
-  # Cursor is also taken from that input, in home.nix. Everything else
-  # stays pinned to the 26.05 branch.
-  nixpkgs.overlays = [
-    (final: prev: {
-      opencode = inputs.nixpkgs-unstable.legacyPackages.${pkgs.stdenv.hostPlatform.system}.opencode;
-    })
-  ];
+  # `opencode` is shipped by bnixos (upstream 2.0.32, see its flake.nix).
+  # No local overlay: the old nixpkgs-unstable pin (1.19.0) would shadow it.
+  # Cursor is still taken from the nixpkgs-unstable input, in home.nix.
 
   # Home-manager: personal configuration, packages, and services
   imports = [

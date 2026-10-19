@@ -160,19 +160,20 @@
         "btheme": "btheme",
         "home-manager": "home-manager",
         "nixos-hardware": "nixos-hardware",
-        "nixpkgs": "nixpkgs"
+        "nixpkgs": "nixpkgs",
+        "opencode": "opencode"
       },
       "locked": {
-        "lastModified": 1791392268,
-        "narHash": "sha256-gvBFVpeAsgdtK1rwjO3EOlzr/EMwNPMJxtC0FZOW9dY=",
-        "ref": "bmux/zellij",
-        "rev": "168c7e9e04702a58d73760cfc9c05965f62bdb95",
-        "revCount": 140,
+        "lastModified": 1792440896,
+        "narHash": "sha256-2oOe3H6TOGMw5Og3p4JascAiK7lwULOye64zSV5r93s=",
+        "ref": "main",
+        "rev": "a579e1ec2dd1e4bf120c14e06ede536ea5f09d0e",
+        "revCount": 145,
         "type": "git",
         "url": "ssh://git@github.com/bhavnicksm/bnixos.git"
       },
       "original": {
-        "ref": "bmux/zellij",
+        "ref": "main",
         "type": "git",
         "url": "ssh://git@github.com/bhavnicksm/bnixos.git"
       }
@@ -375,6 +376,22 @@
         "type": "github"
       }
     },
+    "nixpkgs_2": {
+      "locked": {
+        "lastModified": 1790510107,
+        "narHash": "sha256-EVMNYv7hYDDD9TGVT/hIyTYgpiXA8y3m5xIEIxuGNU0=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "3181085bfd08663b6b9e60bc7a8395c2aaa741bd",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "nixpkgs-unstable",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
     "nixvim": {
       "inputs": {
         "flake-parts": "flake-parts",
@@ -397,6 +414,25 @@
         "owner": "nix-community",
         "ref": "nixos-26.05",
         "repo": "nixvim",
+        "type": "github"
+      }
+    },
+    "opencode": {
+      "inputs": {
+        "nixpkgs": "nixpkgs_2"
+      },
+      "locked": {
+        "lastModified": 1792189012,
+        "narHash": "sha256-KATNzF7z3PoUo30KC13Gm8uC6HA2a9bmJCZRfqY5D44=",
+        "owner": "anomalyco",
+        "repo": "opencode",
+        "rev": "843a6c514e606b436a7fe713422ace0a93ad3d61",
+        "type": "github"
+      },
+      "original": {
+        "owner": "anomalyco",
+        "ref": "v2.0.32",
+        "repo": "opencode",
         "type": "github"
       }
     },
