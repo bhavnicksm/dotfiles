@@ -140,6 +140,18 @@ in
   # (the product allows its default browser; see bnixos configuration.nix).
   bnixos.packages.allowUnfree = [ "spotify" "cursor" "typora" "grok-bot" ];
 
+  # Hyprland 0.57.0 from the pinned nixos-unstable input (flake.nix), while
+  # the rest of the system stays on 26.05. Deliberately overlay ONLY
+  # `hyprland`: the NixOS module and home-manager (`useGlobalPkgs = true`)
+  # then resolve the same package, and the compositor keeps the unstable
+  # dependency closure its own package was built against. The portal stays
+  # at the 26.05 version (see docs/hyprland-lua.md).
+  nixpkgs.overlays = [
+    (final: prev: {
+      hyprland = inputs.hyprland-nixpkgs.legacyPackages.${prev.stdenv.hostPlatform.system}.hyprland;
+    })
+  ];
+
   # `opencode` is shipped by bnixos (upstream 2.0.32, see its flake.nix).
   # No local overlay: the old nixpkgs-unstable pin (1.19.0) would shadow it.
   # Cursor is still taken from the nixpkgs-unstable input, in home.nix.

@@ -20,6 +20,12 @@
     # input in home.nix. opencode now comes from bnixos (upstream 2.0).
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
 
+    # Hyprland 0.57.0 (nixos-unstable, 2026-11-01) only: NixOS/HM stay on
+    # 26.05. personal.nix overlays just `hyprland` from this input; do not
+    # add `inputs.nixpkgs.follows` — the compositor must keep its own
+    # unstable dependency closure.
+    hyprland-nixpkgs.url = "github:nixos/nixpkgs/0bb2eedc20e4739f29e8045034f2828ad7054f8f";
+
     # Grok Bot is an unfree .deb. The flake repackages it and already allows
     # unfree in its package output. Follow unstable, which is what it tests.
     grok-bot = {

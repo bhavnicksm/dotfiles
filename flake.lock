@@ -328,6 +328,22 @@
         "type": "github"
       }
     },
+    "hyprland-nixpkgs": {
+      "locked": {
+        "lastModified": 1793540411,
+        "narHash": "sha256-fiPJ88izTVucjeo2EQ3jk4aWmLg03I1D4vxnX2QjEgE=",
+        "owner": "nixos",
+        "repo": "nixpkgs",
+        "rev": "0bb2eedc20e4739f29e8045034f2828ad7054f8f",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nixos",
+        "repo": "nixpkgs",
+        "rev": "0bb2eedc20e4739f29e8045034f2828ad7054f8f",
+        "type": "github"
+      }
+    },
     "nixos-hardware": {
       "locked": {
         "lastModified": 1764080039,
@@ -444,6 +460,7 @@
           "bnixos",
           "home-manager"
         ],
+        "hyprland-nixpkgs": "hyprland-nixpkgs",
         "nixos-hardware": [
           "bnixos",
           "nixos-hardware"
