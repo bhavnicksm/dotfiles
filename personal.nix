@@ -138,7 +138,7 @@ in
 
   # Unfree apps we intentionally use, layered onto bnixos's own allowance
   # (the product allows its default browser; see bnixos configuration.nix).
-  bnixos.packages.allowUnfree = [ "spotify" "cursor" "typora" "grok-bot" ];
+  bnixos.packages.allowUnfree = [ "spotify" "cursor" "typora" "grok-bot" "paper-design" ];
 
   # Hyprland 0.57.0 from the pinned nixos-unstable input (flake.nix), while
   # the rest of the system stays on 26.05. Deliberately overlay ONLY

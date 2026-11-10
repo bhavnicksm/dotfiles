@@ -7,6 +7,11 @@ let
     inherit (pkgs.stdenv.hostPlatform) system;
     config.allowUnfree = true;
   };
+
+  # Paper Desktop: the by-name package from Nixpkgs PR #557946, pinned to
+  # 0.5.18 because 26.05 predates it. Keep the package local to this flake
+  # instead of adding a nixpkgs input.
+  paperDesign = pkgs.callPackage ./pkgs/paper-design.nix { };
 in
 {
   imports = [
@@ -293,6 +298,7 @@ in
     spotify
     cursorPkgs.code-cursor-fhs
     inputs.grok-bot.packages.${pkgs.stdenv.hostPlatform.system}.default
+    paperDesign
 
     # Typora: the FileChooser portal from xdg-desktop-portal-gtk
     # (personal.nix) is the primary fix for the Electron/GTK file-dialog
@@ -380,5 +386,19 @@ in
     # not pick the keyring and Cursor shows "An OS keyring couldn't be
     # identified for storing the encryption related data".
     ".config/Cursor/argv.json".text = builtins.toJSON { password-store = "gnome-libsecret"; };
+
+    # The manual Paper setup created a plain wrapper and desktop file here.
+    # Take over only those two launcher files (force replaces the regular
+    # files); ~/.paper and all other Paper data stay untouched. The desktop
+    # file keeps its stable ID so the existing x-scheme-handler/paper MIME
+    # mapping keeps resolving.
+    ".local/bin/paper-desktop" = {
+      source = "${paperDesign}/bin/paper-design";
+      force = true;
+    };
+    ".local/share/applications/paper-desktop.desktop" = {
+      source = "${paperDesign}/share/applications/paper-desktop.desktop";
+      force = true;
+    };
   };
 }
